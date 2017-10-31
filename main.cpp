@@ -1,7 +1,7 @@
 #include <iostream>
-#include "DSD_Core/DSDObject.h"
+#include "DSD_Core/DSDBaseObject.h"
 
-class Obj : public DSDObject
+class Obj : public DSDBaseObject
 {
 public:
     std::string ToString() const override

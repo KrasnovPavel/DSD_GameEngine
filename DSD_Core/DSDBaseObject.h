@@ -7,7 +7,7 @@
 
 #include <string>
 
-class DSDObject
+class DSDBaseObject
 {
 public:
     virtual std::string ToString() const = 0;
