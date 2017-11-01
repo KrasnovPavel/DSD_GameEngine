@@ -6,7 +6,7 @@ class Obj : public DSDBaseObject
 public:
     std::string ToString() const override
     {
-        return "Obj: Hello, world!";
+        return "Obj{Hello, world!}";
     }
 };
 
