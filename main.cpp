@@ -1,4 +1,4 @@
-#include <iostream>
+#include <string>
 #include "DSD_Core/DSDBaseObject.h"
 
 class Obj : public DSDBaseObject
@@ -6,15 +6,19 @@ class Obj : public DSDBaseObject
 public:
     std::string ToString() const override
     {
-        return "Hello, world!";
+        return "Obj: Hello, world!";
     }
 };
 
 int main()
 {
-    Obj o;
+    DSDLogger::SetTimestampType(DSDLoggerTimestampType::GLOBAL_TIME);
+    DSDLogger::Log("Hello, world!");
+    DSDLogger::Log("Error msg", DSDLoggerMessageType::ERROR, DSDLoggerOutput(DSDLoggerOutput::STDERR));
+    DSDLogger::Log("Log to file output.txt", DSDLoggerMessageType::WARNING, DSDLoggerOutput("output.txt"));
 
-    std::cout << o.ToString() << std::endl;
+    Obj o;
+    o.LogObject();
 
     return 0;
 }

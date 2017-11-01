@@ -11,3 +11,4 @@ set(LIBRARY_OUTPUT_PATH  ${CMAKE_SOURCE_DIR}/../${CMAKE_PROJECT_NAME}-${CMAKE_BU
 add_subdirectory(DSD_Core)
 
 add_executable(DSD_GameEngine ${SOURCE_FILES})
+target_link_libraries(DSD_GameEngine DSD_Core)
