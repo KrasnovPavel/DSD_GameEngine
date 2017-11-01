@@ -85,8 +85,11 @@ private:
 
     static std::string GetGlobalTimeString();
 
+    static std::ofstream& PrepareFile(const std::string& filename);
+
     static DSDLoggerTimestampType m_timestampType;
     static std::chrono::time_point<std::chrono::steady_clock> m_initTimePoint;
+    static std::unordered_map<std::string, std::ofstream> m_files;
 };
 
 #endif //DSD_GAMEENGINE_DSDLOGGER_H

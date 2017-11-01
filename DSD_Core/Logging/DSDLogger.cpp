@@ -9,6 +9,7 @@
 
 DSDLoggerTimestampType DSDLogger::m_timestampType = DSDLoggerTimestampType::ENGINE_LOCAL_TIME;
 std::chrono::time_point<std::chrono::steady_clock> DSDLogger::m_initTimePoint = std::chrono::steady_clock::now();
+std::unordered_map<std::string, std::ofstream> DSDLogger::m_files;
 
 void DSDLogger::Log(const std::string &message,
                     const DSDLoggerMessageType &messageType,
@@ -69,10 +70,7 @@ const std::string &DSDLogger::GetMessageTypeString(const DSDLoggerMessageType &m
 
 void DSDLogger::WriteToFile(const std::string &message, const std::string& fileName)
 {
-    std::ofstream outputFile;   //TODO: Do not open file every time
-    outputFile.open(fileName);
-    outputFile << message << std::endl;
-    outputFile.close();
+    PrepareFile(fileName) << message << std::endl;
 }
 
 std::string DSDLogger::GetEngineLocalTimeString()
@@ -94,4 +92,19 @@ std::string DSDLogger::GetGlobalTimeString()
     char str[25];
     std::strftime(str, sizeof(str), "%F %T", localtime(&time));
     return std::string(str);
+}
+
+std::ofstream &DSDLogger::PrepareFile(const std::string &filename)
+{
+    if (m_files.find(filename) == m_files.end())
+    {
+        m_files.insert(std::make_pair(filename, std::ofstream()));
+        std::ofstream& stream = m_files.at(filename);
+        stream.open(filename);
+        return stream;
+    }
+    else
+    {
+        return m_files.at(filename);
+    }
 }
