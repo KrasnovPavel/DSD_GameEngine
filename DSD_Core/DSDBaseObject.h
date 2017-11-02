@@ -7,17 +7,18 @@
 
 #include <string>
 
-#include "Logging/DSDLogger.h"
+#include "Logging/Logger.h"
 
 class DSDBaseObject
 {
 public:
     virtual std::string ToString() const = 0;
 
-    void LogObject(const DSDLoggerMessageType& messageType = DSDLoggerMessageType::INFORMATION,
-                   const DSDLoggerOutput& output = DSDLoggerOutput(DSDLoggerOutput::STDOUT)) const
+    template <class T = EngineLocalTime>
+    void LogObject(const LoggerMessageType& messageType = LoggerMessageType::INFORMATION,
+                   const LoggerOutput& output = LoggerOutput(LoggerOutput::STDOUT)) const
     {
-        DSDLogger::Log(ToString(), messageType, output);
+        Logger<T>::Log(ToString(), messageType, output);
     }
 };
 
