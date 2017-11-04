@@ -32,9 +32,12 @@ addons:
 # Build your code e.g. by calling make
 script:
   - cd ./
+  - doxygen $DOXYFILE
+  - rm -rf `ls | grep -v '^html' | grep -v '^latex'`
 
-# Generate and deploy documentation
-after_success:
-  - cd $TRAVIS_BUILD_DIR
-  - chmod +x generateDocumentationAndDeploy.sh
-  - ./generateDocumentationAndDeploy.sh
+deploy:
+  provider: pages
+  skip_cleanup: true
+  github_token: $GITHUB_API_KEY
+  on:
+    branch: master
