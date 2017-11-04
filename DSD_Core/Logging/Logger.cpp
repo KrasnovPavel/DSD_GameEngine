@@ -1,5 +1,5 @@
 //
-// Created by pavel on 10/31/17.
+// Created by Pavel Krasnov (krasnovpavel0@gmail.com) on 31/10/2017.
 //
 #include <ctime>
 #include <fstream>
@@ -8,45 +8,33 @@
 #include <thread>
 #include "Logger.h"
 
-template <class T>
-std::chrono::time_point<std::chrono::steady_clock> Logger<T>::m_initTimePoint = std::chrono::steady_clock::now();
-template <class T>
-std::unordered_map<std::string, std::ofstream> Logger<T>::m_files;
-template <class T>
-std::thread Logger<T>::m_thread;
-template <class T>
-std::queue<typename Logger<T>::LoggingData> Logger<T>::m_Tasks;
-template <class T>
-std::mutex Logger<T>::m_mutex;
-template <class T>
-bool Logger<T>::m_wantJoin = false;
-template <class T>
-bool Logger<T>::m_isFirstTime = true;
-template <class T>
-std::condition_variable Logger<T>::m_CV;
+std::unordered_map<std::string, std::ofstream> Logger::m_files;
+std::thread Logger::m_thread = std::thread(LoggerControl);
+std::queue<typename Logger::LoggingData> Logger::m_tasks;
+std::mutex Logger::m_mutex;
+bool Logger::m_wantJoin = false;
+std::condition_variable Logger::m_CV;
+LoggerTimestamp::Type Logger::m_timestampType = LoggerTimestamp::ENGINE_LOCAL_TIME;
 
-template <>
-void Logger<EngineLocalTime>::Log(const std::string &message,
-                                  const LoggerMessageType &messageType,
-                                  const LoggerOutput &output)
+void Logger::Log(const std::string &message,
+                 const LoggerMessageType &messageType,
+                 const LoggerOutput &output)
 {
-    auto time = std::chrono::steady_clock::now() - m_initTimePoint;
-    AddTask(LoggingData(message, time, messageType, output));
+    // We don't want to fall if thread was closed
+    if (!m_thread.joinable())
+    {
+        m_wantJoin = false;
+        m_thread = std::thread(LoggerControl);
+    }
+    m_mutex.lock();
+    m_tasks.push(LoggingData(message, LoggerTimestamp(m_timestampType), messageType, output));
+    m_mutex.unlock();
+    m_CV.notify_one();
 }
 
-template <>
-void Logger<GlobalTime>::Log(const std::string &message,
-                             const LoggerMessageType &messageType,
-                             const LoggerOutput &output)
+void Logger::Write(const std::string &message, const LoggerOutput &output)
 {
-    auto time = std::chrono::system_clock::now();
-    AddTask(LoggingData(message, time, messageType, output));
-}
-
-template <class T>
-void Logger<T>::Write(const std::string &message, const LoggerOutput &output)
-{
-    switch (output.GetOutputType())
+    switch (output.outputType())
     {
         case LoggerOutput::STDOUT:
             std::cout << message << std::endl;
@@ -55,7 +43,7 @@ void Logger<T>::Write(const std::string &message, const LoggerOutput &output)
             std::cerr << message << std::endl;
             break;
         case LoggerOutput::FILE:
-            WriteToFile(message, output.GetFileName());
+            WriteToFile(message, output.fileName());
             break;
         default:
             std::cerr << "Not create yet!" << std::endl; //TODO: make logging for graphics mode
@@ -64,8 +52,7 @@ void Logger<T>::Write(const std::string &message, const LoggerOutput &output)
 
 }
 
-template <class T>
-const std::string &Logger<T>::GetMessageTypeString(const LoggerMessageType &messageType)
+const std::string &Logger::GetMessageTypeString(const LoggerMessageType &messageType)
 {
     static std::string mType;
     switch (messageType)
@@ -83,36 +70,12 @@ const std::string &Logger<T>::GetMessageTypeString(const LoggerMessageType &mess
     return mType;
 }
 
-template <class T>
-void Logger<T>::WriteToFile(const std::string &message, const std::string& fileName)
+void Logger::WriteToFile(const std::string &message, const std::string& fileName)
 {
     PrepareFile(fileName) << message << std::endl;
 }
 
-template <>
-std::string Logger<EngineLocalTime>::TimeToString(const EngineLocalTime& engineLocalTime)
-{
-    auto diffM = std::chrono::duration_cast<std::chrono::minutes>(engineLocalTime);
-    auto diffH = std::chrono::duration_cast<std::chrono::hours>(engineLocalTime);
-
-    std::string result = std::to_string(diffH.count()) + ":" +
-                         std::to_string(diffM.count()) + ":" +
-                         std::to_string(engineLocalTime.count());
-
-    return result;
-}
-
-template <>
-std::string Logger<GlobalTime>::TimeToString(const GlobalTime& globalTime)
-{
-    std::time_t time = std::chrono::system_clock::to_time_t(std::chrono::system_clock::now());
-    char str[25];
-    std::strftime(str, sizeof(str), "%F %T", localtime(&time));
-    return std::string(str);
-}
-
-template <class T>
-std::ofstream &Logger<T>::PrepareFile(const std::string &filename)
+std::ofstream &Logger::PrepareFile(const std::string &filename)
 {
     if (m_files.find(filename) == m_files.end())
     {
@@ -127,54 +90,35 @@ std::ofstream &Logger<T>::PrepareFile(const std::string &filename)
     }
 }
 
-template <class T>
-void Logger<T>::LogInThread(const LoggingData& data)
+void Logger::LogInThread(const LoggingData& data)
 {
-    std::string timestamp;
-    timestamp = TimeToString(data.m_time);
-    Write("[" + timestamp + "] " + GetMessageTypeString(data.m_messageType) + ": " + data.m_message, data.m_output);
+    Write("[" + data.m_time.GetString() + "] " +
+          GetMessageTypeString(data.m_messageType) +
+          ": " + data.m_message, data.m_output);
 }
 
-template <>
-void Logger<EngineLocalTime>::JoinThread()
+void Logger::JoinThread()
 {
     m_wantJoin = true;
-    if (m_thread.joinable() && !m_isFirstTime) m_thread.join();
+    m_thread.join();
 }
 
-template <>
-void Logger<GlobalTime>::JoinThread()
+void Logger::LoggerControl()
 {
-    m_wantJoin = true;
-    if (m_thread.joinable() && !m_isFirstTime) m_thread.join();
-}
-
-template <class T>
-void Logger<T>::LoggerControl()
-{
-    while (!m_wantJoin || !m_Tasks.empty())
+    while (!m_wantJoin || !m_tasks.empty())
     {
         std::unique_lock<std::mutex> locker(m_mutex);
-        while(m_Tasks.empty()) m_CV.wait(locker);
+        while(m_tasks.empty()) m_CV.wait(locker);
 
-        while (!m_Tasks.empty())
+        while (!m_tasks.empty())
         {
-            LogInThread(m_Tasks.front());
-            m_Tasks.pop();
+            LogInThread(m_tasks.front());
+            m_tasks.pop();
         }
     }
 }
 
-template <class T>
-void Logger<T>::AddTask(const LoggingData &data)
+void Logger::SetTimestampType(LoggerTimestamp::Type timestampType)
 {
-    if (m_isFirstTime)
-    {
-        m_thread = std::thread(LoggerControl);
-        m_isFirstTime = false;
-    }
-    m_mutex.lock();
-    m_Tasks.push(data);
-    m_mutex.unlock();
-    m_CV.notify_one();
+    m_timestampType = timestampType;
 }

@@ -1,49 +1,81 @@
 //
-// Created by pavel on 11/1/17.
+// Created by Pavel Krasnov (krasnovpavel0@gmail.com) on 01/11/2017.
 //
 
 #ifndef DSD_GAMEENGINE_LOGGEROUTPUT_H
 #define DSD_GAMEENGINE_LOGGEROUTPUT_H
 
+#include <exception>
 #include <string>
 
+/**
+ * @addtogroup Logger
+ * @{
+ */
+
+/**
+ * @brief "File not specified" exception
+ */
+class FileNameNotSpecified: public std::exception
+{
+    virtual const char* what() const throw()
+    {
+        return "File name not specified";
+    }
+};
+
+/**
+ * @brief Class defining output stream
+ */
 class LoggerOutput
 {
 public:
-    enum OutputType
+    /// Defines where to log message
+    enum Type
     {
-        FILE,
-        STDOUT,
-        STDERR,
-        LOG_SCREEN,
-        MAIN_SCREEN
+        FILE, ///< Log to file
+        STDOUT, ///< Log to std::cout
+        STDERR, ///< Log to std::cerr
+        LOG_SCREEN, ///< Log to special created log screen
+        MAIN_SCREEN ///< Log to program main screen
     };
 
-    explicit LoggerOutput(const LoggerOutput::OutputType& outputType)
+    /**
+     * @brief Constructor
+     * @param outputType Defines where to log message
+     * @param fileName Specifies file to log if necessary
+     * @throw FileNameNotSpecified If outputType == FILE, but file wasn't specified
+     */
+    explicit LoggerOutput(const LoggerOutput::Type& outputType, const std::string& fileName = std::string()) throw(FileNameNotSpecified)
     {
         m_outputType = outputType;
-    }
-
-    explicit LoggerOutput(const std::string& fileName)
-    {
-        m_outputType = FILE;
         m_fileName = fileName;
+        if (m_outputType == FILE && m_fileName.empty()) throw FileNameNotSpecified();
     }
 
-    const LoggerOutput::OutputType& GetOutputType() const
+    /**
+     * @brief Returns where to log message
+     */
+    const LoggerOutput::Type& outputType() const
     {
         return m_outputType;
     }
 
-    const std::string& GetFileName() const
+    /**
+     * @brief Returns name of file to log if specified
+     */
+    const std::string& fileName() const
     {
         return m_fileName;
     }
 
 private:
-    LoggerOutput::OutputType m_outputType;
+    LoggerOutput::Type m_outputType;
     std::string m_fileName;
 };
 
+/**
+ * @}
+ */
 
 #endif //DSD_GAMEENGINE_LOGGEROUTPUT_H

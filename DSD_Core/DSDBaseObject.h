@@ -1,5 +1,5 @@
 //
-// Created by Pavel Krasnov (krasnovpavel0@gmail.com) on 10/30/17.
+// Created by Pavel Krasnov (krasnovpavel0@gmail.com) on 30/10/2017.
 //
 
 #ifndef DSD_GAMEENGINE_DSDOBJECT_H
@@ -14,11 +14,10 @@ class DSDBaseObject
 public:
     virtual std::string ToString() const = 0;
 
-    template <class T = EngineLocalTime>
     void LogObject(const LoggerMessageType& messageType = LoggerMessageType::INFORMATION,
                    const LoggerOutput& output = LoggerOutput(LoggerOutput::STDOUT)) const
     {
-        Logger<T>::Log(ToString(), messageType, output);
+        Logger::Log(ToString(), messageType, output);
     }
 };
 
