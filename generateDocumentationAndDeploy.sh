@@ -39,27 +39,12 @@ echo 'Setting up the script...'
 # Exit with nonzero exit code if anything fails
 set -e
 
-# Create a clean working directory for this script.
-mkdir code_docs
-cd code_docs
-
-# Get the current gh-pages branch
-git clone -b gh-pages https://git@$GH_REPO_REF
-cd $GH_REPO_NAME
-
 ##### Configure git.
 # Set the push default to simple i.e. push only the current branch.
 git config --global push.default simple
 # Pretend to be an user called Travis CI.
 git config user.name "Pavel Krasnov through Travis CI"
 git config user.email "krasnovpavel0@gmail.com"
-
-# Remove everything currently in the gh-pages branch.
-# GitHub is smart enough to know which files have changed and which files have
-# stayed the same and will only update the changed files. So the gh-pages branch
-# can be safely cleaned, and it is sure that everything pushed later is the new
-# documentation.
-rm -rf *
 
 # Need to create a .nojekyll file to allow filenames starting with an underscore
 # to be seen on the gh-pages site. Therefore creating an empty .nojekyll file.
@@ -79,6 +64,8 @@ doxygen $DOXYFILE 2>&1 | tee doxygen.log
 # Check this by verifying that the html directory and the file html/index.html
 # both exist. This is a good indication that Doxygen did it's work.
 if [ -d "html" ] && [ -f "html/index.html" ]; then
+
+    rm -rf ./!(html|latex)
 
     echo 'Uploading documentation to the gh-pages branch...'
     # Add everything in this directory (the Doxygen code documentation) to the
