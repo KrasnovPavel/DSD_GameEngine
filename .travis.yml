@@ -31,7 +31,7 @@ addons:
 
 # Build your code e.g. by calling make
 script:
-  - cd ./
+  - rm README.md
   - doxygen $DOXYFILE
   - rm -rf `ls | grep -v '^html' | grep -v '^latex'`
 
