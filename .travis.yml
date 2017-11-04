@@ -14,6 +14,11 @@ env:
     - GH_REPO_REF="github.com/$GH_REPO_ORG/$GH_REPO_NAME.git"
     - DOXYFILE: $TRAVIS_BUILD_DIR/Doxyfile
 
+notifications:
+  slack:
+    - on_success: never
+    - on_failure: never
+
 # Install dependencies
 addons:
   apt:
