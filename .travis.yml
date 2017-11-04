@@ -1,0 +1,31 @@
+# This will run on Travis' 'new' container-based infrastructure
+sudo: false
+
+# Blacklist
+branches:
+  only:
+    - master
+
+# Environment variables
+env:
+  global:
+    - GH_REPO_ORG=`echo $TRAVIS_REPO_SLUG | cut -d "/" -f 1`
+    - GH_REPO_NAME=`echo $TRAVIS_REPO_SLUG | cut -d "/" -f 2`
+    - GH_REPO_REF="github.com/$GH_REPO_ORG/$GH_REPO_NAME.git"
+    - DOXYFILE: $TRAVIS_BUILD_DIR/Doxyfile
+
+# Install dependencies
+addons:
+  apt:
+    packages:
+      - doxygen
+      - doxygen-doc
+      - doxygen-latex
+      - doxygen-gui
+      - graphviz
+
+# Generate and deploy documentation
+after_success:
+  - cd $TRAVIS_BUILD_DIR
+  - chmod +x generateDocumentationAndDeploy.sh
+  - ./generateDocumentationAndDeploy.sh
