@@ -1,0 +1,1 @@
+[Doxygen docs](krasnovpavel.github.io/DSD_GameEngine/html/)
