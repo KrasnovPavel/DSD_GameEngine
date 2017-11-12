@@ -9,6 +9,7 @@
 #include <condition_variable>
 #include <fstream>
 #include <mutex>
+#include <thread>
 #include <string>
 #include <queue>
 #include <unordered_map>

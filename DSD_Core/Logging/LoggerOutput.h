@@ -18,7 +18,7 @@
  */
 class FileNameNotSpecified: public std::exception
 {
-    virtual const char* what() const throw()
+    const char* what() const throw() override
     {
         return "File name not specified";
     }
@@ -46,7 +46,7 @@ public:
      * @param fileName Specifies file to log if necessary
      * @throw FileNameNotSpecified If outputType == FILE, but file wasn't specified
      */
-    explicit LoggerOutput(const LoggerOutput::Type& outputType, const std::string& fileName = std::string()) throw(FileNameNotSpecified)
+    explicit LoggerOutput(const LoggerOutput::Type& outputType, const std::string& fileName = std::string())
     {
         m_outputType = outputType;
         m_fileName = fileName;
