@@ -1,1 +1,1 @@
-[Doxygen docs](http://krasnovpavel.github.io/DSD_GameEngine/html/)
+[Doxygen docs](https://krasnovpavel.github.io/DSD_GameEngine/html/)
