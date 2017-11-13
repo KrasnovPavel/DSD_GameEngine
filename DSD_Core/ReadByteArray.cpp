@@ -3,6 +3,7 @@
 //
 
 #include <cstring>
+
 #include "ReadByteArray.h"
 
 template <>

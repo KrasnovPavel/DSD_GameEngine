@@ -1,7 +1,9 @@
 #include <string>
 #include <thread>
 #include <iostream>
+
 #include "DSD_Core/DSDBaseObject.h"
+#include "DSD_Core/FileController.h"
 #include "DSD_Core/SerializationController.h"
 
 class Obj : public DSDBaseObject
@@ -30,14 +32,14 @@ private:
 int main()
 {
     Obj o;
-    o.set("Obj", 5.5, 100000180.564, 1212.1351578);
+//    o.set("Obj", 5.5, 100000180.564, 1212.1351578);
     std::chrono::steady_clock::time_point t = std::chrono::steady_clock::now();
-    std::cout << o.ToString() << std::endl;
+//    std::cout << o.ToString() << std::endl;
     SerializationController::AddSerializableObject(&o);
-    WriteByteArray arr = SerializationController::Serialize();
+//    FileController::writeToFile("test.sav", SerializationController::Serialize());
     o.set("null", 0, 0, 0);
     std::cout << o.ToString() << std::endl;
-    ReadByteArray rarr(arr.data(), arr.length());
+    ReadByteArray rarr = FileController::readFromFile("test.sav");
     SerializationController::Deserialize(rarr);
     std::cout << o.ToString() << std::endl;
 
@@ -45,7 +47,7 @@ int main()
 
     std::cout << nt.count() << std::endl;
 
-    Logger::JoinThread();
+//    Logger::JoinThread();
 
     return 0;
 }

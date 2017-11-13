@@ -21,7 +21,7 @@ public:
         delete[] m_array;
     }
 
-    constexpr const unsigned& length()
+    inline const unsigned& length() const
     {
         return m_length;
     }
@@ -29,7 +29,7 @@ public:
     template <typename t>
     void write(const t& var);
 
-    constexpr const char* data()
+    inline const char* data() const
     {
         return m_array;
     }

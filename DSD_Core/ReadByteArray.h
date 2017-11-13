@@ -13,6 +13,11 @@ class ReadByteArray
 public:
     ReadByteArray(const char* const array, const unsigned& length) : m_array(array), m_length(length) {}
 
+    ~ReadByteArray()
+    {
+        delete[] m_array;
+    }
+
     constexpr const unsigned& length()
     {
         return m_length;
