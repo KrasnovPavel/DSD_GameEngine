@@ -10,7 +10,11 @@
 class WriteByteArray
 {
 public:
-    explicit WriteByteArray(const unsigned& length) : m_array(new char(length)), m_length(length) {}
+    explicit WriteByteArray(const unsigned& length)
+            : m_array(new char(length)), m_length(length)
+    {
+        *(m_array+m_length-1) = '\0';
+    }
 
     ~WriteByteArray()
     {
@@ -44,7 +48,7 @@ private:
 
     void checkLength(std::size_t size)
     {
-        if (m_pos+size >= m_length) throw(std::out_of_range("WriteByteArray::operator<<"));
+        if (m_pos+size >= m_length) throw(std::out_of_range("WriteByteArray::write"));
     }
 };
 

@@ -41,7 +41,7 @@ void SerializationController::RemoveSerializableObject(DSDBaseObject *const obje
 
 std::size_t SerializationController::sizeOfObjects()
 {
-    std::size_t result = sizeof(unsigned) * m_objects.size(); //TODO: count deleting object
+    std::size_t result = sizeof(unsigned) * m_objects.size() + 1; //TODO: count deleting object
     for (auto& obj: m_objects)
     {
         result += obj.second->SerializedSize();

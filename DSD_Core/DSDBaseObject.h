@@ -47,12 +47,6 @@ public:
         return "{}";
     }
 
-    void LogObject(const LoggerMessageType& messageType = LoggerMessageType::INFORMATION,
-                   const LoggerOutput& output = LoggerOutput(LoggerOutput::STDOUT)) const
-    {
-        Logger::Log(ToString(), messageType, output);
-    }
-
     std::size_t SerializedSize()
     {
         std::size_t result = sizeof(unsigned);
@@ -106,7 +100,7 @@ std::size_t DSDBaseObject::varSize(t& var)
 template <>
 std::size_t DSDBaseObject::varSize(std::string& var)
 {
-    return var.size() + 1;
+    return var.size() + sizeof(std::size_t);
 };
 
 //template <>

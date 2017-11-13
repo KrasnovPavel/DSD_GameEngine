@@ -9,16 +9,19 @@ class Obj : public DSDBaseObject
 public:
     std::string ToString() const override
     {
-        return "{" + std::to_string(x) + " " + std::to_string(y) + " " + std::to_string(z) + "}";
+        return name + "{" + std::to_string(x) + " " + std::to_string(y) + " " + std::to_string(z) + "}";
     }
-    void set(double x, double y, double z)
+
+    void set(const std::string& name, double x, double y, double z)
     {
+        this->name = name;
         this->x = x;
         this->y = y;
         this->z = z;
     }
 
 private:
+    serializable(std::string, name, "");
     serializable(double, x, 0);
     serializable(double, y, 0);
     serializable(double, z, 0);
@@ -27,16 +30,16 @@ private:
 int main()
 {
     Obj o;
-    o.set(5.5, 100000180.564, 1212.1351578);
+    o.set("Obj", 5.5, 100000180.564, 1212.1351578);
     std::chrono::steady_clock::time_point t = std::chrono::steady_clock::now();
-    o.LogObject();
+    std::cout << o.ToString() << std::endl;
     SerializationController::AddSerializableObject(&o);
     WriteByteArray arr = SerializationController::Serialize();
-    o.set(0, 0, 0);
-    o.LogObject();
+    o.set("null", 0, 0, 0);
+    std::cout << o.ToString() << std::endl;
     ReadByteArray rarr(arr.data(), arr.length());
     SerializationController::Deserialize(rarr);
-    o.LogObject();
+    std::cout << o.ToString() << std::endl;
 
     auto nt = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now() - t);
 

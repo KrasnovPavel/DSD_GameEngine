@@ -13,11 +13,6 @@ class ReadByteArray
 public:
     ReadByteArray(const char* const array, const unsigned& length) : m_array(array), m_length(length) {}
 
-    ~ReadByteArray()
-    {
-        delete[] m_array;
-    }
-
     constexpr const unsigned& length()
     {
         return m_length;
@@ -27,7 +22,7 @@ public:
     t read();
 
 private:
-    inline void checkLength(const std::size_t& size) const
+    inline void checkLength(std::size_t size) const
     {
         if (m_pos + size >= m_length) throw (std::out_of_range("ReadByteArray::read"));
     }

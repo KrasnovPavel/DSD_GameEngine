@@ -86,11 +86,13 @@ private:
     class LoggingData
     {
     public:
-        LoggingData(const std::string& message,
+        LoggingData(std::string message,
                     const LoggerTimestamp& time,
                     const LoggerMessageType& messageType,
                     const LoggerOutput& output)
         : m_message(message), m_time(time), m_messageType(messageType), m_output(output) {}
+
+        ~LoggingData() = default;
 
         const std::string m_message;
         const LoggerTimestamp m_time;
