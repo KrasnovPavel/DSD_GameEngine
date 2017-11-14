@@ -7,6 +7,7 @@
 
 #include <functional>
 #include <string>
+#include <type_traits>
 #include <utility>
 #include <vector>
 
@@ -18,11 +19,11 @@
     ( \
         [this](WriteByteArray& data) \
             { \
-                data.write<varType>((varName)); \
+                serializeVar((varName), data); \
             }, \
         [this](ReadByteArray& data) \
             { \
-                (varName) = data.read<varType>(); \
+                deserializeVar((varName), data); \
             }, \
         [this]()->std::size_t \
             { \
@@ -35,13 +36,22 @@ typedef std::function<void(WriteByteArray&)> s_func;
 typedef std::function<void(ReadByteArray&)>  d_func;
 typedef std::function<std::size_t()> sizeof_func;
 
-class SerializationController;
 
 class DSDBaseObject
 {
-    friend SerializationController;
+private:
+    template <typename T>
+    static constexpr bool isA = std::is_base_of<DSDBaseObject, T>() &&
+                                                std::is_convertible<T, DSDBaseObject>();
 
 public:
+    ~DSDBaseObject()
+    {
+        m_deserializationFunctions.clear();
+        m_serializationFunctions.clear();
+        m_sizeofFunctions.clear();
+    }
+
     virtual std::string ToString() const
     {
         return "{}";
@@ -56,19 +66,6 @@ public:
         }
         return result;
     }
-
-protected:
-    template <typename t>
-    t AddVar(s_func serializationFunction, d_func deserializationFunction, sizeof_func sizeofFunction, t varInit)
-    {
-        m_serializationFunctions.push_back(serializationFunction);
-        m_deserializationFunctions.push_back(deserializationFunction);
-        m_sizeofFunctions.push_back(sizeofFunction);
-        return varInit;
-    }
-
-    template <typename t>
-    std::size_t varSize(t& var);
 
     void Serialize(WriteByteArray& data) const
     {
@@ -86,6 +83,43 @@ protected:
         }
     }
 
+protected:
+    template <typename T, std::enable_if_t<!(isA<T>)>* = nullptr>
+    void serializeVar(const T& var, WriteByteArray& data)
+    {
+        data.write<T>(var);
+    }
+
+    template <typename T, std::enable_if_t<isA<T>>* = nullptr>
+    void serializeVar(const T& var, WriteByteArray& data)
+    {
+        var.Serialize(data);
+    }
+
+    template <typename T, std::enable_if_t<!(isA<T>)>* = nullptr>
+    void deserializeVar(T& var, ReadByteArray& data)
+    {
+        var = data.read<T>();
+    }
+
+    template <typename T, std::enable_if_t<isA<T>>* = nullptr>
+    void deserializeVar(T& var, ReadByteArray& data)
+    {
+        var.Deserialize(data);
+    }
+
+    template <typename t>
+    t AddVar(s_func serializationFunction, d_func deserializationFunction, sizeof_func sizeofFunction, t varInit)
+    {
+        m_serializationFunctions.push_back(serializationFunction);
+        m_deserializationFunctions.push_back(deserializationFunction);
+        m_sizeofFunctions.push_back(sizeofFunction);
+        return varInit;
+    }
+
+    template <typename t>
+    std::size_t varSize(t& var);
+
     std::vector<s_func> m_serializationFunctions{};
     std::vector<d_func> m_deserializationFunctions{};
     std::vector<sizeof_func> m_sizeofFunctions{};
@@ -95,18 +129,18 @@ template <typename t>
 std::size_t DSDBaseObject::varSize(t& var)
 {
     return sizeof(t);
-};
+}
+
+template <>
+std::size_t DSDBaseObject::varSize(DSDBaseObject& var)
+{
+    return var.SerializedSize();
+}
 
 template <>
 std::size_t DSDBaseObject::varSize(std::string& var)
 {
     return var.size() + sizeof(std::size_t);
 };
-
-//template <>
-//std::size_t DSDBaseObject::varSize(std::vector& var)
-//{
-//    return (var.size()==0)?0:var.size()*sizeof(var[0]);
-//};
 
 #endif //DSD_GAMEENGINE_DSDBASEOBJECT_H

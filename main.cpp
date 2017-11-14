@@ -6,38 +6,96 @@
 #include "DSD_Core/FileController.h"
 #include "DSD_Core/SerializationController.h"
 
+class Vector : public DSDBaseObject
+{
+public:
+    Vector() : m_x(0), m_y(0), m_z(0) {}
+
+    Vector(Vector &&other)
+    {
+        m_x = other.x();
+        m_y = other.y();
+        m_z = other.z();
+    }
+
+    Vector(const double& x, const double& y, const double& z)
+    {
+        m_x = x;
+        m_y = y;
+        m_z = z;
+    }
+
+    std::string ToString() const override
+    {
+        std::string result;
+        result.reserve(100);
+        result.append("Vector{");
+        result.append(std::to_string(m_x));
+        result.append(" ");
+        result.append(std::to_string(m_y));
+        result.append(" ");
+        result.append(std::to_string(m_z));
+        result.append("}");
+        return result;
+    }
+
+    const double& x() const
+    {
+        return m_x;
+    }
+
+    const double& y() const
+    {
+        return m_y;
+    }
+
+    const double& z() const
+    {
+        return m_z;
+    }
+
+    const Vector& operator=(const Vector& other)
+    {
+        m_x = other.x();
+        m_y = other.y();
+        m_z = other.z();
+        return *this;
+    }
+
+private:
+    serializable(double, m_x, 0);
+    serializable(double, m_y, 0);
+    serializable(double, m_z, 0);
+};
+
 class Obj : public DSDBaseObject
 {
 public:
-    std::string ToString() const override
-    {
-        return name + "{" + std::to_string(x) + " " + std::to_string(y) + " " + std::to_string(z) + "}";
-    }
-
-    void set(const std::string& name, double x, double y, double z)
+    void set(const std::string& name, const Vector& vec)
     {
         this->name = name;
-        this->x = x;
-        this->y = y;
-        this->z = z;
+        this->vec = vec;
+    }
+
+    std::string ToString() const override
+    {
+        return name + "{" + vec.ToString() + "}";
     }
 
 private:
     serializable(std::string, name, "");
-    serializable(double, x, 0);
-    serializable(double, y, 0);
-    serializable(double, z, 0);
+    serializable(Vector, vec, Vector());
 };
 
 int main()
 {
     Obj o;
-//    o.set("Obj", 5.5, 100000180.564, 1212.1351578);
+    o.set("Obj", Vector(5.5, 100000180.564, 1212.1351578));
     std::chrono::steady_clock::time_point t = std::chrono::steady_clock::now();
-//    std::cout << o.ToString() << std::endl;
+    std::cout << o.ToString() << std::endl;
     SerializationController::AddSerializableObject(&o);
-//    FileController::writeToFile("test.sav", SerializationController::Serialize());
-    o.set("null", 0, 0, 0);
+    FileController::writeToFile("test.sav", SerializationController::Serialize());
+    o.set("", Vector());
     std::cout << o.ToString() << std::endl;
     ReadByteArray rarr = FileController::readFromFile("test.sav");
     SerializationController::Deserialize(rarr);

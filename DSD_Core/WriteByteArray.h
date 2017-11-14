@@ -11,7 +11,7 @@ class WriteByteArray
 {
 public:
     explicit WriteByteArray(const unsigned& length)
-            : m_array(new char(length)), m_length(length)
+            : m_array(new char[length]), m_length(length)
     {
         *(m_array+m_length-1) = '\0';
     }
@@ -38,7 +38,7 @@ public:
     {
         delete[] m_array;
         m_length = newSize;
-        m_array = new char(m_length);
+        m_array = new char[m_length];
     }
 
 private:
