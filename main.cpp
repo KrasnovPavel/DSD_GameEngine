@@ -119,23 +119,23 @@ int main()
     o.set("Obj", Vector(5.5, 100000180.564, 1212.1351578));
     o1.set("Obj1", Vector(55.5, 100180.564, 1212.1));
     std::chrono::steady_clock::time_point t = std::chrono::steady_clock::now();
-    sc.AddSerializableObject(&o);
-    sc.AddSerializableObject(&o1);
-    sc.AddSerializableObject(&v);
-    FileController::writeToFile("test.sav", sc.Serialize());
+    sc.addSerializableObject(&o);
+    sc.addSerializableObject(&o1);
+    sc.addSerializableObject(&v);
+    FileController::writeToFile("test.sav", sc.serialize());
     o.set("", Vector());
     o1.set("", Vector());
     v.set(0,0,0);
     ReadByteArray rarr = FileController::readFromFile("test.sav");
-    sc.Deserialize(rarr);
+    sc.deserialize(rarr);
     o.logObject();
     o1.logObject();
     v.logObject();
-    sc.RemoveSerializableObject(&o);
-    FileController::writeToFile("test.sav", sc.Serialize());
+    sc.removeSerializableObject(&o);
+    FileController::writeToFile("test.sav", sc.serialize());
     Logger::Log("Removing");
     ReadByteArray rarr1 = FileController::readFromFile("test.sav");
-    sc.Deserialize(rarr1);
+    sc.deserialize(rarr1);
     std::vector<DSDBaseObject*> r = sc.objectsToRemove();
     for (auto* ob: r)
     {
@@ -143,7 +143,6 @@ int main()
     }
 
     std::vector<DSDBaseObject*> newObjects = sc.newObjects();
-
 
     auto nt = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now() - t);
 

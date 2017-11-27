@@ -18,16 +18,16 @@ typedef std::function<DSDBaseObject*()> creator;
 class SerializationController
 {
 public:
-    void AddSerializableObject(DSDBaseObject* object);
-    void AddSerializableObject(DSDBaseObject* object, const unsigned& ID);
-    void RemoveSerializableObject(DSDBaseObject* object);
-    const WriteByteArray& Serialize();
-    void Deserialize(ReadByteArray& data);
+    void addSerializableObject(DSDBaseObject* object);
+    void addSerializableObject(DSDBaseObject* object, const unsigned& ID);
+    void removeSerializableObject(DSDBaseObject* object);
+    const WriteByteArray& serialize();
+    void deserialize(ReadByteArray& data);
     const std::vector<DSDBaseObject*>& newObjects();
     const std::vector<DSDBaseObject*>& objectsToRemove();
 
 private:
-    void RemoveObject(const unsigned& ID);
+    void removeObject(const unsigned& ID);
     std::size_t sizeOfObjects();
     std::unordered_map<unsigned, DSDBaseObject*> m_objects{};
     unsigned m_counter = 1;

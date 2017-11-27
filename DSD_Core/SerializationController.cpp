@@ -4,7 +4,7 @@
 
 #include "SerializationController.h"
 
-const WriteByteArray& SerializationController::Serialize()
+const WriteByteArray& SerializationController::serialize()
 {
     m_warray.reset(sizeOfObjects());
     m_warray.write<std::size_t>(m_removedObjects.size());
@@ -22,14 +22,14 @@ const WriteByteArray& SerializationController::Serialize()
     return m_warray;
 }
 
-void SerializationController::Deserialize(ReadByteArray& data)
+void SerializationController::deserialize(ReadByteArray& data)
 {
     m_newObjects.clear();
     m_objectsToRemove.clear();
     std::size_t count = data.read<std::size_t>();
     for (int i = 0; i < count; ++i)
     {
-        RemoveObject(data.read<unsigned>());
+        removeObject(data.read<unsigned>());
     }
     while (!data.isFinished())
     {
@@ -48,20 +48,20 @@ void SerializationController::Deserialize(ReadByteArray& data)
         }
         else
         {
-            AddSerializableObject(ObjectRegistrator::instantiateByID(classID), number);
+            addSerializableObject(ObjectRegistrator::instantiateByID(classID), number);
             m_newObjects.back()->deserialize(data);
         }
     }
 }
 
-void SerializationController::AddSerializableObject(DSDBaseObject * object)
+void SerializationController::addSerializableObject(DSDBaseObject * object)
 {
     object->setObjectID(m_counter);
     m_objects.insert(std::make_pair(m_counter, object));
     ++m_counter;
 }
 
-void SerializationController::AddSerializableObject(DSDBaseObject *object, const unsigned &ID)
+void SerializationController::addSerializableObject(DSDBaseObject *object, const unsigned &ID)
 {
     m_newObjects.push_back(object);
     object->setObjectID(ID);
@@ -69,7 +69,7 @@ void SerializationController::AddSerializableObject(DSDBaseObject *object, const
     m_counter = (m_counter>ID)?m_counter:(ID+1);
 }
 
-void SerializationController::RemoveSerializableObject(DSDBaseObject * object)
+void SerializationController::removeSerializableObject(DSDBaseObject * object)
 {
     m_removedObjects.push_back(object->objectID());
     object->setObjectID(0);
@@ -97,10 +97,13 @@ const std::vector<DSDBaseObject*>& SerializationController::objectsToRemove()
     return m_objectsToRemove;
 }
 
-void SerializationController::RemoveObject(const unsigned &ID)
+void SerializationController::removeObject(const unsigned &ID)
 {
-    DSDBaseObject * obj = m_objects.at(ID);
-    m_objectsToRemove.push_back(obj);
-    obj->setObjectID(0);
-    m_objects.erase(ID);
+    if (m_objects.count(ID) > 0)
+    {
+        DSDBaseObject * obj = m_objects.at(ID);
+        m_objectsToRemove.push_back(obj);
+        obj->setObjectID(0);
+        m_objects.erase(ID);
+    }
 }
