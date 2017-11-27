@@ -35,7 +35,8 @@ enum class LoggerMessageType
 
 /**
  * @brief Class for logging data
- * @details Class implements
+ * @details Class implements logging to different receivers.
+ * For performance logging works in separate thread.
  */
 class Logger
 {

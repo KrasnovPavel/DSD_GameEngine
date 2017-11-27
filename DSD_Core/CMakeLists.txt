@@ -7,4 +7,4 @@ add_subdirectory(Logging)
 
 add_library(DSD_Core SHARED ${SOURCE_FILES})
 set_target_properties(DSD_Core PROPERTIES LINKER_LANGUAGE CXX)
-#target_link_libraries(DSD_Core Logging)
+target_link_libraries(DSD_Core Logging)

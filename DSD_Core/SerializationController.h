@@ -13,20 +13,28 @@
 #include "ReadByteArray.h"
 #include "WriteByteArray.h"
 
+typedef std::function<DSDBaseObject*()> creator;
+
 class SerializationController
 {
 public:
-    static unsigned long AddSerializableObject(DSDBaseObject* object);
-    static void RemoveSerializableObject(DSDBaseObject* object);
-    static const WriteByteArray& Serialize();
-    static void Deserialize(ReadByteArray& data);
+    void AddSerializableObject(DSDBaseObject* object);
+    void AddSerializableObject(DSDBaseObject* object, const unsigned& ID);
+    void RemoveSerializableObject(DSDBaseObject* object);
+    const WriteByteArray& Serialize();
+    void Deserialize(ReadByteArray& data);
+    const std::vector<DSDBaseObject*>& newObjects();
+    const std::vector<DSDBaseObject*>& objectsToRemove();
 
 private:
-    static std::size_t sizeOfObjects();
-    static std::unordered_map<unsigned, DSDBaseObject* const> m_objects;
-    static unsigned m_counter;
-    static WriteByteArray m_warray;
-    //static std::vector<std::size_t> m_creators;
+    void RemoveObject(const unsigned& ID);
+    std::size_t sizeOfObjects();
+    std::unordered_map<unsigned, DSDBaseObject*> m_objects{};
+    unsigned m_counter = 1;
+    WriteByteArray m_warray;
+    std::vector<DSDBaseObject*> m_newObjects{};
+    std::vector<DSDBaseObject*> m_objectsToRemove{};
+    std::vector<unsigned> m_removedObjects{};
 };
 
 #endif //DSD_GAMEENGINE_SERIALIZATIONCONTROLLER_H

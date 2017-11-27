@@ -8,11 +8,13 @@
 
 class Vector : public DSDBaseObject
 {
+    REFLECTION(Vector);
 public:
-    Vector() : m_x(0), m_y(0), m_z(0) {}
+    Vector() : Vector(0.0,0.0,0.0) {}
 
-    Vector(Vector &&other)
+    Vector(Vector &&other) noexcept
     {
+        m_objectID = other.objectID();
         m_x = other.x();
         m_y = other.y();
         m_z = other.z();
@@ -25,18 +27,11 @@ public:
         m_z = z;
     }
 
-    std::string ToString() const override
+    std::string toString() const override
     {
-        std::string result;
-        result.reserve(100);
-        result.append("Vector{");
-        result.append(std::to_string(m_x));
-        result.append(" ");
-        result.append(std::to_string(m_y));
-        result.append(" ");
-        result.append(std::to_string(m_z));
-        result.append("}");
-        return result;
+        return "(" + std::to_string(classID()) + ":" + std::to_string(objectID())
+                + "){" + std::to_string(m_x) + " " + std::to_string(m_y)
+                + " " + std::to_string(m_z) + "}";
     }
 
     const double& x() const
@@ -54,7 +49,7 @@ public:
         return m_z;
     }
 
-    const Vector& operator=(const Vector& other)
+    Vector& operator=(const Vector& other)
     {
         m_x = other.x();
         m_y = other.y();
@@ -62,50 +57,99 @@ public:
         return *this;
     }
 
+    void set(double x, double y, double z)
+    {
+        m_x = x;
+        m_y = y;
+        m_z = z;
+    }
+
 private:
     serializable(double, m_x, 0);
     serializable(double, m_y, 0);
     serializable(double, m_z, 0);
 };
+INIT_REFLECTION(Vector);
 
 class Obj : public DSDBaseObject
 {
+    REFLECTION(Obj);
 public:
-    void set(const std::string& name, const Vector& vec)
+    Obj() {}
+
+    Obj(Obj&& other) noexcept
     {
-        this->name = name;
-        this->vec = vec;
+        m_objectID = other.objectID();
+        m_name = other.name();
+        m_vec = other.vec();
     }
 
-    std::string ToString() const override
+    void set(const std::string& name, const Vector& vec)
     {
-        return name + "{" + vec.ToString() + "}";
+        m_name = name;
+        m_vec = vec;
+    }
+
+    const std::string& name() const
+    {
+        return m_name;
+    }
+
+    const Vector& vec() const
+    {
+        return m_vec;
+    }
+
+    std::string toString() const override
+    {
+        return m_name + "(" + std::to_string(classID()) + ":" + std::to_string(objectID()) + "){" + m_vec.toString() + "}";
     }
 
 private:
-    serializable(std::string, name, "");
-    serializable(Vector, vec, Vector());
+    serializable(std::string, m_name, "");
+    serializable(Vector, m_vec, Vector());
 };
+INIT_REFLECTION(Obj);
 
 int main()
 {
-    Obj o;
+    SerializationController sc;
+    Obj o, o1;
+    Vector v;
     o.set("Obj", Vector(5.5, 100000180.564, 1212.1351578));
+    o1.set("Obj1", Vector(55.5, 100180.564, 1212.1));
     std::chrono::steady_clock::time_point t = std::chrono::steady_clock::now();
-    std::cout << o.ToString() << std::endl;
-    SerializationController::AddSerializableObject(&o);
-    FileController::writeToFile("test.sav", SerializationController::Serialize());
+    sc.AddSerializableObject(&o);
+    sc.AddSerializableObject(&o1);
+    sc.AddSerializableObject(&v);
+    FileController::writeToFile("test.sav", sc.Serialize());
     o.set("", Vector());
-    std::cout << o.ToString() << std::endl;
+    o1.set("", Vector());
+    v.set(0,0,0);
     ReadByteArray rarr = FileController::readFromFile("test.sav");
-    SerializationController::Deserialize(rarr);
-    std::cout << o.ToString() << std::endl;
+    sc.Deserialize(rarr);
+    o.logObject();
+    o1.logObject();
+    v.logObject();
+    sc.RemoveSerializableObject(&o);
+    FileController::writeToFile("test.sav", sc.Serialize());
+    Logger::Log("Removing");
+    ReadByteArray rarr1 = FileController::readFromFile("test.sav");
+    sc.Deserialize(rarr1);
+    std::vector<DSDBaseObject*> r = sc.objectsToRemove();
+    for (auto* ob: r)
+    {
+        ob->logObject();
+    }
+
+    std::vector<DSDBaseObject*> newObjects = sc.newObjects();
+
 
     auto nt = std::chrono::duration_cast<std::chrono::microseconds>(std::chrono::steady_clock::now() - t);
 
     std::cout << nt.count() << std::endl;
 
-//    Logger::JoinThread();
+    Logger::JoinThread();
 
     return 0;
 }

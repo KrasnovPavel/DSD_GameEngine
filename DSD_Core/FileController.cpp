@@ -21,11 +21,11 @@ ReadByteArray FileController::readFromFile(std::string filename)
     if (in.is_open())
     {
         auto size = in.tellg();
-        char* data = new char(size);
+        char* data = new char[size];
         in.seekg(0, std::ios::beg);
         in.read(data, size);
         in.close();
-        return ReadByteArray(data, (unsigned)size);
+        return ReadByteArray(data, (std::size_t)size);
     }
     else throw (FileOpeningFaliure(filename));
 }
