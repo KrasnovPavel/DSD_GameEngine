@@ -12,6 +12,14 @@
 #include "ReadByteArray.h"
 #include "WriteByteArray.h"
 
+/**
+ * @addtogroup Serialization
+ * @{
+ */
+
+/**
+ * @brief The FileOpeningFaliure class
+ */
 class FileOpeningFaliure : public std::exception
 {
 public:
@@ -29,13 +37,30 @@ private:
     std::string m_str;
 };
 
+/**
+ * @brief The FileController class
+ * @details Class for reading and writing Serialised data form/in file.
+ */
 class FileController
 {
 public:
+    /**
+     * @brief writeToFile Writes given byte array @a data in file
+     * @param filename File to write
+     * @param data Data to write
+     */
     static void writeToFile(std::string filename, const WriteByteArray& data);
-    static ReadByteArray readFromFile(std::string filename);
 
+    /**
+     * @brief readFromFile Reads byte array from file
+     * @param filename File to read from
+     * @return Byte array
+     */
+    static ReadByteArray readFromFile(std::string filename);
 };
 
+/**
+ * @}
+ */
 
 #endif //DSD_GAMEENGINE_FILECONTROLLER_H

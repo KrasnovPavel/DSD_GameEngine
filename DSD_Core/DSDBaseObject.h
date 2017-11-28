@@ -15,39 +15,6 @@
 #include "ReadByteArray.h"
 #include "WriteByteArray.h"
 
-#define serializable(varType, varName, varInit) varType varName = AddVar \
-    ( \
-        [this](WriteByteArray& data) \
-            { \
-                serializeVar((varName), data); \
-            }, \
-        [this](ReadByteArray& data) \
-            { \
-                deserializeVar((varName), data); \
-            }, \
-        [this]()->std::size_t \
-            { \
-                return varSize((varName)); \
-            }, \
-        varInit \
-    )
-
-#define REFLECTION(className) \
-    private: \
-        const static unsigned m_classID; \
-    public: \
-        static DSDBaseObject* createInstance();\
-        virtual const unsigned& classID() const override \
-        { \
-            return className::m_classID; \
-        } \
-    private:
-
-
-#define INIT_REFLECTION(className) \
-    DSDBaseObject* className::createInstance() {return new className(); }; \
-    const unsigned className::m_classID = ObjectRegistrator::registry(&className::createInstance);
-
 typedef std::function<void(WriteByteArray&)> s_func;
 typedef std::function<void(ReadByteArray&)>  d_func;
 typedef std::function<std::size_t()> sizeof_func;
@@ -71,11 +38,66 @@ private:
 };
 std::vector<DSDBaseObject*(*)()> ObjectRegistrator::classCreators{};
 
+class SerializationController;
+
 /**
  * @defgroup Core
  * @brief Core library for the engine
  * @{
  */
+
+/**
+ * @def SERIALIZABLE(varType, varName, varInit)
+ * @brief Deaclare serializable variable
+ * @details Declares variable with @a varName of @a varType, init it with @a varInit and
+ * create serialization and deserialization functions for this variable.
+ */
+#define SERIALIZABLE(varType, varName, varInit) varType varName = AddVar \
+    ( \
+        [this](WriteByteArray& data) \
+            { \
+                serializeVar((varName), data); \
+            }, \
+        [this](ReadByteArray& data) \
+            { \
+                deserializeVar((varName), data); \
+            }, \
+        [this]()->std::size_t \
+            { \
+                return varSize((varName)); \
+            }, \
+        varInit \
+    )
+
+/**
+ * @def REFLECTION(className)
+ * @brief Creates reflection data for this class
+ * @details Must be called first in class defenition,
+ * @a className must fit class where it was called,
+ * after class defenition INIT_REFLECTION mast be called,
+ * if not then UB.
+ */
+#define REFLECTION(className) \
+    private: \
+        const static unsigned m_classID; \
+    public: \
+        static DSDBaseObject* createInstance();\
+        virtual const unsigned& classID() const override \
+        { \
+            return className::m_classID; \
+        } \
+    private:
+
+/**
+ * @def INIT_REFLECTION(className)
+ * @brief Inits reflection data for class @className
+ * @details Mast be called after class definition,
+ * @a className must call REFLECTION,
+ * if not then UB.
+ */
+#define INIT_REFLECTION(className) \
+    DSDBaseObject* className::createInstance() {return new className(); }; \
+    const unsigned className::m_classID = ObjectRegistrator::registry(&className::createInstance);
 
 /**
  * @brief Base class for engine hierarchy
@@ -87,12 +109,29 @@ private:
     static constexpr bool isA = std::is_base_of<DSDBaseObject, T>() &&
                                                 std::is_convertible<T, DSDBaseObject>();
     const static unsigned m_classID;
+
+    friend SerializationController;
+    void setObjectID(const unsigned& newID)
+    {
+        m_objectID = newID;
+    }
 public:
+    /**
+     * @brief DSDBaseObject default constructor
+     * @details All inheritors must have their own default constructor.
+     */
     DSDBaseObject() {}
+
+    /**
+     * @brief DSDBaseObject copy constructor
+     * @param other
+     * @details All inheritors must have their own copy constructor.
+     */
     DSDBaseObject(DSDBaseObject&& other)
     {
         m_objectID = other.objectID();
     }
+
     /**
      * @brief Represents class data as std::string
      * @return string reprisents class data
@@ -102,6 +141,12 @@ public:
         return "{}";
     }
 
+    /**
+     * @brief logObject Writes object data to log
+     * @details Writes DSDBaseObject::toString() to log.
+     * @param type Type of message.
+     * @param output Where to log message.
+     */
     virtual void logObject(const LoggerMessageType& type = LoggerMessageType::INFORMATION,
                            const LoggerOutput& output = LoggerOutput(LoggerOutput::STDOUT))
     {
@@ -146,24 +191,31 @@ public:
         }
     }
 
+    /**
+     * @brief classID Get ID of this class
+     * @return
+     */
     virtual const unsigned& classID() const
     {
         return DSDBaseObject::m_classID;
     }
 
+    /**
+     * @brief createInstance Instantiates new object of this class
+     * @return
+     */
     static DSDBaseObject* createInstance()
     {
         return new DSDBaseObject();
     }
 
+    /**
+     * @brief objectID Returns ID of this object
+     * @return ID of this object or 0 if object do not own by any Serialization controller.
+     */
     const unsigned& objectID() const
     {
         return m_objectID;
-    }
-
-    void setObjectID(const unsigned& newID)
-    {
-        m_objectID = newID;
     }
 
 protected:
@@ -227,7 +279,7 @@ protected:
     std::vector<s_func> m_serializationFunctions{};
     std::vector<d_func> m_deserializationFunctions{};
     std::vector<sizeof_func> m_sizeofFunctions{};
-    unsigned m_objectID;
+    unsigned m_objectID = 0;
 };
 
 const unsigned DSDBaseObject::m_classID = ObjectRegistrator::registry(&DSDBaseObject::createInstance);

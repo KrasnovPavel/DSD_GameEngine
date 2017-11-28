@@ -65,9 +65,9 @@ public:
     }
 
 private:
-    serializable(double, m_x, 0);
-    serializable(double, m_y, 0);
-    serializable(double, m_z, 0);
+    SERIALIZABLE(double, m_x, 0);
+    SERIALIZABLE(double, m_y, 0);
+    SERIALIZABLE(double, m_z, 0);
 };
 INIT_REFLECTION(Vector);
 
@@ -106,8 +106,8 @@ public:
     }
 
 private:
-    serializable(std::string, m_name, "");
-    serializable(Vector, m_vec, Vector());
+    SERIALIZABLE(std::string, m_name, "");
+    SERIALIZABLE(Vector, m_vec, Vector());
 };
 INIT_REFLECTION(Obj);
 
