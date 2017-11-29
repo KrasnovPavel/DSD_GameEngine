@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.8)
 project(DSD_Core)
 
-set(SOURCE_FILES DSDBaseObject.h SerializationController.cpp SerializationController.h ReadByteArray.h WriteByteArray.h WriteByteArray.cpp ReadByteArray.cpp FileController.cpp FileController.h)
+set(SOURCE_FILES DSDBaseObject.h SerializationController.cpp SerializationController.h ReadByteArray.h WriteByteArray.h WriteByteArray.cpp ReadByteArray.cpp FileController.cpp FileController.h Vector3.h)
 
 add_subdirectory(Logging)
 
