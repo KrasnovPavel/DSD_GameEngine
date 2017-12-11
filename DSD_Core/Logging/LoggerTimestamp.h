@@ -1,5 +1,5 @@
 //
-// Created by Pavel Krasnov (krasnovpavel0@gmail.com) on 04/11/2017
+// Created by Pavel Krasnov (krasnovpavel0@gmail.com) on 04.11.2017
 //
 
 #ifndef DSD_GAMEENGINE_LOGGERTIMESTAMPTYPE_H
@@ -81,7 +81,5 @@ private:
 /**
  * @}
  */
-
-std::chrono::steady_clock::time_point LoggerTimestamp::m_initTimePoint = std::chrono::steady_clock::now();
 
 #endif //DSD_GAMEENGINE_LOGGERTIMESTAMPTYPE_H

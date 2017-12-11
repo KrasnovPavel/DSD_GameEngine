@@ -1,9 +1,9 @@
 //
-// Created by Pavel Krasnov (krasnovpavel0@gmail.com) on 31/10/2017.
+// Created by Pavel Krasnov (krasnovpavel0@gmail.com) on 31.10.2017.
 //
 
-#ifndef DSD_GAMEENGINE_DSDLOGGER_H
-#define DSD_GAMEENGINE_DSDLOGGER_H
+#ifndef DSD_GAMEENGINE_LOGGER_H
+#define DSD_GAMEENGINE_LOGGER_H
 
 #include <chrono>
 #include <condition_variable>
@@ -113,4 +113,4 @@ private:
 /**
  * @}
  */
-#endif //DSD_GAMEENGINE_DSDLOGGER_H
+#endif //DSD_GAMEENGINE_LOGGER_H

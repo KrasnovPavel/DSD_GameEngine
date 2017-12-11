@@ -1,5 +1,5 @@
 //
-// Created by Pavel Krasnov (krasnovpavel0@gmail.com) on 31/10/2017.
+// Created by Pavel Krasnov (krasnovpavel0@gmail.com) on 31.10.2017.
 //
 #include <ctime>
 #include <fstream>
@@ -15,6 +15,8 @@ std::mutex Logger::m_mutex;
 bool Logger::m_wantJoin = false;
 std::condition_variable Logger::m_CV;
 LoggerTimestamp::Type Logger::m_timestampType = LoggerTimestamp::ENGINE_LOCAL_TIME;
+std::chrono::steady_clock::time_point LoggerTimestamp::m_initTimePoint = std::chrono::steady_clock::now();
+
 
 void Logger::Log(const std::string &message,
                  const LoggerMessageType &messageType,

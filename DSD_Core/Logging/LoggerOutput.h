@@ -1,5 +1,5 @@
 //
-// Created by Pavel Krasnov (krasnovpavel0@gmail.com) on 01/11/2017.
+// Created by Pavel Krasnov (krasnovpavel0@gmail.com) on 01.11.2017.
 //
 
 #ifndef DSD_GAMEENGINE_LOGGEROUTPUT_H
