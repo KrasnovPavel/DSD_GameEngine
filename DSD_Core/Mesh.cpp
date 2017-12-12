@@ -11,13 +11,13 @@ void Mesh::setMesh(const std::vector<Triangle>& triangles)
     this->triangles = triangles;
 };
 
-std::pair<float*, std::size_t> Mesh::vertexArray()
+std::pair<double*, std::size_t> Mesh::vertexArray()
 {
-    auto* verticles = new float[triangles.size()*9];
+    auto* verticles = new double[triangles.size()*9];
     for (unsigned i = 0; i < triangles.size(); ++i)
     {
-        float* arr = triangles.at(i).vertexArray();
-        std::memcpy(verticles + i*9, arr, sizeof(float)*9);
+        double* arr = triangles.at(i).vertexArray();
+        std::memcpy(verticles + i*9, arr, sizeof(double)*9);
         delete[] arr;
         for (unsigned j = 0; j < 3; ++j )
         {
@@ -26,5 +26,5 @@ std::pair<float*, std::size_t> Mesh::vertexArray()
             verticles[i+j+2] += position.z;
         }
     }
-    return std::make_pair(verticles, sizeof(float)*9*triangles.size());
+    return std::make_pair(verticles, sizeof(double)*9*triangles.size());
 }

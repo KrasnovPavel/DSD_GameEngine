@@ -14,10 +14,5 @@ add_executable(DSD_GameEngine ${SOURCE_FILES})
 
 find_package(OpenGL REQUIRED)
 find_package(GLUT REQUIRED)
-find_package(GLEW REQUIRED)
-find_package(glfw3 REQUIRED)
-set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
-set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
-set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
 
-target_link_libraries(DSD_GameEngine DSD_Core ${OPENGL_LIBRARIES} ${GLUT_LIBRARY} ${GLEW_LIBRARY} glfw)
+target_link_libraries(DSD_GameEngine DSD_Core ${OPENGL_LIBRARIES} ${GLUT_LIBRARY})

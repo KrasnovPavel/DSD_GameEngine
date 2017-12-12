@@ -32,7 +32,7 @@ public:
 
     void setMesh(const std::vector<Triangle>& triangles);
 
-    std::pair<float*, std::size_t> vertexArray();
+    std::pair<double*, std::size_t> vertexArray();
 
     inline std::size_t amountOfVerticles()
     {

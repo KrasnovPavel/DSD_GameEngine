@@ -1,86 +1,67 @@
 #include <string>
 #include <thread>
 #include <iostream>
-#include <GL/glew.h>
-#include <GLFW/glfw3.h>
+#include <GL/gl.h>
+#include <GL/glut.h>
 
 #include "DSD_Core/DSDBaseObject.h"
 #include "DSD_Core/Mesh.h"
 
+#define ORTHO_SCALE 2.
 
-int main()
+std::pair<double*, std::size_t> mm;
+Mesh m;
+
+void display(void)
 {
-    Mesh m;
-    std::vector<Triangle> tr {Triangle(Vector3(0, 0.5, 0), Vector3(0.5, -0.5, 0), Vector3(-0.5, -0.5, 0)),
-                              Triangle(Vector3(-0.5, 0.5, 0), Vector3(0, -0.5, 0), Vector3(-1, -0.5, 0)),
-                              Triangle(Vector3(0.5, 0.5, 0), Vector3(1, -0.5, 0), Vector3(0, -0.5, 0))};
+    GLuint win_width, win_height;
+    GLfloat win_aspect;
+
+    win_width  = glutGet(GLUT_WINDOW_WIDTH);
+    win_height = glutGet(GLUT_WINDOW_HEIGHT);
+    win_aspect = (float)win_width/(float)win_height;
+
+    glViewport(0, 0, win_width, win_height);
+
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glOrtho(-win_aspect * ORTHO_SCALE,
+            win_aspect * ORTHO_SCALE,
+            -ORTHO_SCALE,
+            ORTHO_SCALE,
+            -1., 1.);
+
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+
+    glPushMatrix();
+
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glVertexPointer(3, GL_DOUBLE, 0, mm.first);
+    glDrawArrays(GL_TRIANGLES, 0, m.amountOfVerticles());
+
+    glPopMatrix();
+
+    glutSwapBuffers();
+}
+
+int main(int argc, char* argv[])
+{
+    std::vector<Triangle> tr {Triangle(Vector3(0, 0.5, 0),    Vector3(0.5, -0.5, 0), Vector3(-0.5, -0.5, 0)),
+                              Triangle(Vector3(-0.5, 0.5, 0), Vector3(0, -0.5, 0),   Vector3(-1, -0.5, 0)),
+                              Triangle(Vector3(0.5, 0.5, 0),  Vector3(1, -0.5, 0),   Vector3(0, -0.5, 0))};
     m.setMesh(tr);
 
-    std::pair<float*, std::size_t> mm = m.vertexArray();
+    mm.first = m.vertexArray().first;
+    glutInit(&argc, argv);
+    glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE);
 
-    if( !glfwInit() )
-    {
-        fprintf( stderr, "Failed to initialize GLFW\n" );
-        return -1;
-    }
+    glutCreateWindow("DSDGameEngine");
+    glutDisplayFunc(display);
 
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
-    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
-    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
-    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-
-    GLFWwindow* window = glfwCreateWindow(640, 480, "DSDGameEngine", NULL, NULL);
-    if (!window) {
-        fprintf(stderr, "ERROR: could not open window with GLFW3\n");
-        glfwTerminate();
-        return 1;
-    }
-    glfwMakeContextCurrent(window);
-
-    glewExperimental = GL_TRUE;
-    glewInit();
-
-    GLuint vbo = 0;
-    glGenBuffers(1, &vbo);
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glBufferData(GL_ARRAY_BUFFER, mm.second, mm.first, GL_STATIC_DRAW);
-    GLuint vao = 0;
-    glGenVertexArrays(1, &vao);
-    glBindVertexArray(vao);
-    glEnableVertexAttribArray(0);
-    glBindBuffer(GL_ARRAY_BUFFER, vbo);
-    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, NULL);
-
-    const char* vertex_shader =
-            "#version 400\n"
-                    "in vec3 vp;"
-                    "void main() {"
-                    "  gl_Position = vec4(vp, 1.0);"
-                    "}";
-    const char* fragment_shader =
-            "#version 400\n"
-                    "out vec4 frag_colour;"
-                    "void main() {"
-                    "  frag_colour = vec4(0.5, 0.0, 0.5, 1.0);"
-                    "}";
-    GLuint vs = glCreateShader(GL_VERTEX_SHADER);
-    glShaderSource(vs, 1, &vertex_shader, NULL);
-    glCompileShader(vs);
-    GLuint fs = glCreateShader(GL_FRAGMENT_SHADER);
-    glShaderSource(fs, 1, &fragment_shader, NULL);
-    glCompileShader(fs);
-    GLuint shader_program = glCreateProgram();
-    glAttachShader(shader_program, fs);
-    glAttachShader(shader_program, vs);
-    glLinkProgram(shader_program);
-    while(!glfwWindowShouldClose(window)) {
-        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-        glUseProgram(shader_program);
-        glBindVertexArray(vao);
-        glDrawArrays(GL_TRIANGLES, 0, m.amountOfVerticles());
-        glfwPollEvents();
-        glfwSwapBuffers(window);
-    }
+    glutMainLoop();
 
 //    SerializationController sc;
 //

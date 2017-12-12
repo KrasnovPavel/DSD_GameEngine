@@ -46,9 +46,9 @@ public:
         return *this;
     }
 
-    float* vertexArray()
+    double* vertexArray()
     {
-        auto* verticles = new float[9]
+        auto* verticles = new double[9]
                 {
                         firstVertex.x, firstVertex.y, firstVertex.z,
                         secondVertex.x, secondVertex.y, secondVertex.z,
