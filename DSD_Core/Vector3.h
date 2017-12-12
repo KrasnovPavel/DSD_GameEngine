@@ -2,8 +2,8 @@
 // Created by Pavel Krasnov (krasnovpavel0@gmail.com) on 29.11.17.
 //
 
-#ifndef DSD_VECTOR3_H
-#define DSD_VECTOR3_H
+#ifndef DSD_GAMEENGINE_VECTOR3_H
+#define DSD_GAMEENGINE_VECTOR3_H
 
 #include <cmath>
 
@@ -13,10 +13,13 @@ class Vector3 : public DSDBaseObject
 {
     REFLECTION(Vector3);
 public:
-    Vector3() : DSDBaseObject() {}
+    Vector3() {}
 
-    explicit Vector3(Vector3&& other)
-        : x(other.x), y(other.y), z(other.z) {}
+    Vector3(Vector3&& other) noexcept
+        : x(other.x), y(other.y), z(other.z), DSDBaseObject(other) {}
+
+    Vector3(const Vector3& other)
+        : x(other.x), y(other.y), z(other.z), DSDBaseObject(other) {}
 
     Vector3(const double& x, const double& y, const double& z)
     {
@@ -34,16 +37,11 @@ public:
 
     inline double length()
     {
-        return std::sqrt(m_x*m_x, m_y*m_y, m_z*m_z);
-    }
-
-    inline double distance(const Vector3& other) const
-    {
-        return ((*this) - other).length();
+        return std::sqrt(x*x + y*y + z*z);
     }
 
     inline bool operator ==(const Vector3& rhs)
-    {
+    {   //TODO: Epsilon check
         return (x == rhs.x) && (y == rhs.y) && (z == rhs.z);
     }
 
@@ -54,69 +52,76 @@ public:
 
     inline Vector3& operator -=(const Vector3& rhs)
     {
-        x -= other.x;
-        y -= other.y;
-        z -= other.z;
+        x -= rhs.x;
+        y -= rhs.y;
+        z -= rhs.z;
         return *this;
     }
 
     inline Vector3& operator +=(const Vector3& rhs)
     {
-        x += other.x;
-        y += other.y;
-        z += other.z;
+        x += rhs.x;
+        y += rhs.y;
+        z += rhs.z;
         return *this;
     }
 
     inline Vector3& operator *=(const double& rhs)
     {
-        x *= other;
-        y *= other;
-        z *= other;
+        x *= rhs;
+        y *= rhs;
+        z *= rhs;
         return *this;
     }
 
     inline Vector3& operator /=(const double& rhs)
     {
-        x /= other;
-        y /= other;
-        z /= other;
+        x /= rhs;
+        y /= rhs;
+        z /= rhs;
         return *this;
     }
 
     friend inline Vector3 operator +(Vector3 lhs, const Vector3& rhs)
-     {
-       lhs += rhs;
-       return lhs;
-     }
+    {
+        lhs += rhs;
+        return lhs;
+    }
 
     friend inline Vector3 operator -(Vector3 lhs, const Vector3& rhs)
-     {
-       lhs -= rhs;
-       return lhs;
-     }
+    {
+        lhs -= rhs;
+        return lhs;
+    }
 
     friend inline Vector3 operator *(Vector3 lhs, const double& rhs)
-     {
-       lhs *= rhs;
-       return lhs;
-     }
+    {
+        lhs *= rhs;
+        return lhs;
+    }
 
     friend inline Vector3 operator /(Vector3 lhs, const double& rhs)
-     {
-       lhs /= rhs;
-       return lhs;
-     }
+    {
+        lhs /= rhs;
+        return lhs;
+    }
+
+    inline double distance(const Vector3& other) const
+    {
+        return ((*this) - other).length();
+    }
+
+    inline Vector3& operator=(const Vector3& rhl)
+    {
+        x = rhl.x;
+        y = rhl.y;
+        z = rhl.z;
+        return *this;
+    }
 
     SERIALIZABLE(double, x, 0);
     SERIALIZABLE(double, y, 0);
     SERIALIZABLE(double, z, 0);
 };
-INIT_REFLECTION(Vector3);
 
-double Vector3::dot(const Vector3& first, const Vector3& second)
-{
-    return first.x * second.x + first.y * second.y + first.z * second.z;
-}
-
-#endif //DSD_VECTOR3_H
+#endif //DSD_GAMEENGINE_VECTOR3_H

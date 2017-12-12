@@ -36,7 +36,6 @@ public:
 private:
     static std::vector<DSDBaseObject*(*)()> classCreators;
 };
-std::vector<DSDBaseObject*(*)()> ObjectRegistrator::classCreators{};
 
 class SerializationController;
 
@@ -127,7 +126,17 @@ public:
      * @param other
      * @details All inheritors must have their own copy constructor.
      */
-    DSDBaseObject(DSDBaseObject&& other)
+    DSDBaseObject(DSDBaseObject&& other) noexcept
+    {
+        m_objectID = other.objectID();
+    }
+
+    /**
+     * @brief DSDBaseObject move constructor
+     * @param other
+     * @details All inheritors must have their own move constructor.
+     */
+    DSDBaseObject(const DSDBaseObject& other)
     {
         m_objectID = other.objectID();
     }
@@ -276,19 +285,17 @@ protected:
         return sizeof(T);
     }
 
+    std::size_t varSize(std::string& var)
+    {
+        return var.size() + sizeof(std::size_t);
+    }
+
     std::vector<s_func> m_serializationFunctions{};
     std::vector<d_func> m_deserializationFunctions{};
     std::vector<sizeof_func> m_sizeofFunctions{};
     unsigned m_objectID = 0;
 };
 
-const unsigned DSDBaseObject::m_classID = ObjectRegistrator::registry(&DSDBaseObject::createInstance);
-
-template <>
-std::size_t DSDBaseObject::varSize(std::string& var)
-{
-    return var.size() + sizeof(std::size_t);
-};
 
 /**
  * @}

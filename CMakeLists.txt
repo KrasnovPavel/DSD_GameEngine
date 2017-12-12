@@ -11,4 +11,13 @@ set(LIBRARY_OUTPUT_PATH  ${CMAKE_SOURCE_DIR}/../${CMAKE_PROJECT_NAME}-${CMAKE_BU
 add_subdirectory(DSD_Core)
 
 add_executable(DSD_GameEngine ${SOURCE_FILES})
-target_link_libraries(DSD_GameEngine DSD_Core)
+
+find_package(OpenGL REQUIRED)
+find_package(GLUT REQUIRED)
+find_package(GLEW REQUIRED)
+find_package(glfw3 REQUIRED)
+set(GLFW_BUILD_DOCS OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_TESTS OFF CACHE BOOL "" FORCE)
+set(GLFW_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
+
+target_link_libraries(DSD_GameEngine DSD_Core ${OPENGL_LIBRARIES} ${GLUT_LIBRARY} ${GLEW_LIBRARY} glfw)
