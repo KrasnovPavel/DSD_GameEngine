@@ -11,20 +11,14 @@ void Mesh::setMesh(const std::vector<Triangle>& triangles)
     this->triangles = triangles;
 };
 
-std::pair<double*, std::size_t> Mesh::vertexArray()
+std::pair<double*, std::size_t> Mesh::vertexArray() const
 {
     auto* verticles = new double[triangles.size()*9];
     for (unsigned i = 0; i < triangles.size(); ++i)
     {
-        double* arr = triangles.at(i).vertexArray();
+        double* arr = triangles.at(i).vertexArrayTranslated(position, rotation);
         std::memcpy(verticles + i*9, arr, sizeof(double)*9);
         delete[] arr;
-        for (unsigned j = 0; j < 3; ++j )
-        {
-            verticles[i+j] += position.x;
-            verticles[i+j+1] += position.y;
-            verticles[i+j+2] += position.z;
-        }
     }
     return std::make_pair(verticles, sizeof(double)*9*triangles.size());
 }

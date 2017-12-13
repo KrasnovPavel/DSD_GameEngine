@@ -32,11 +32,11 @@ public:
 
     void setMesh(const std::vector<Triangle>& triangles);
 
-    std::pair<double*, std::size_t> vertexArray();
+    std::pair<double*, std::size_t> vertexArray() const;
 
-    inline std::size_t amountOfVerticles()
+    inline std::size_t amountOfVerticles() const
     {
-        return triangles.size() * 4;
+        return triangles.size() * 3;
     }
 
     Mesh& operator=(const Mesh& rhl)

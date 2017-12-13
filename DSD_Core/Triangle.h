@@ -46,7 +46,7 @@ public:
         return *this;
     }
 
-    double* vertexArray()
+    double* vertexArray() const
     {
         auto* verticles = new double[9]
                 {
@@ -56,6 +56,8 @@ public:
                 };
         return verticles;
     }
+
+    double* vertexArrayTranslated(const Vector3& position, const Quaternion& rotation) const;
 
     SERIALIZABLE(Vector3, normalVector, Vector3());
     SERIALIZABLE(Vector3, firstVertex, Vector3());

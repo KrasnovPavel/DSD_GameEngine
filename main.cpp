@@ -7,9 +7,8 @@
 #include "DSD_Core/DSDBaseObject.h"
 #include "DSD_Core/Mesh.h"
 
-#define ORTHO_SCALE 2.
+#define ORTHO_SCALE 1.
 
-std::pair<double*, std::size_t> mm;
 Mesh m;
 
 void display(void)
@@ -39,7 +38,7 @@ void display(void)
     glPushMatrix();
 
     glEnableClientState(GL_VERTEX_ARRAY);
-    glVertexPointer(3, GL_DOUBLE, 0, mm.first);
+    glVertexPointer(3, GL_DOUBLE, 0, m.vertexArray().first);
     glDrawArrays(GL_TRIANGLES, 0, m.amountOfVerticles());
 
     glPopMatrix();
@@ -47,19 +46,26 @@ void display(void)
     glutSwapBuffers();
 }
 
+void repaint(void)
+{
+//    m.position += Vector3(0.001, 0 , 0);
+    m.rotation *= Quaternion(0.002, Vector3(0, 0, 1));
+    glutPostRedisplay();
+}
+
 int main(int argc, char* argv[])
 {
-    std::vector<Triangle> tr {Triangle(Vector3(0, 0.5, 0),    Vector3(0.5, -0.5, 0), Vector3(-0.5, -0.5, 0)),
-                              Triangle(Vector3(-0.5, 0.5, 0), Vector3(0, -0.5, 0),   Vector3(-1, -0.5, 0)),
-                              Triangle(Vector3(0.5, 0.5, 0),  Vector3(1, -0.5, 0),   Vector3(0, -0.5, 0))};
+    std::vector<Triangle> tr {Triangle(Vector3(0, 0.5, 0),    Vector3(0.5, -0, 0), Vector3(-0.5, -0, 0)),
+                              Triangle(Vector3(-0.5, 0.5, 0), Vector3(0, -0, 0),   Vector3(-1, -0, 0)),
+                              Triangle(Vector3(0.5, 0.5, 0),  Vector3(1, -0, 0),   Vector3(0, -0, 0))};
     m.setMesh(tr);
 
-    mm.first = m.vertexArray().first;
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE);
 
     glutCreateWindow("DSDGameEngine");
     glutDisplayFunc(display);
+    glutIdleFunc(repaint);
 
     glutMainLoop();
 

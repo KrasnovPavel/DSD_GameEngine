@@ -31,22 +31,22 @@ public:
 
     static double dot(const Vector4& first, const Vector4& second);
 
-    double dot(const Vector4 &other) const
+    inline double dot(const Vector4 &other) const
     {
         return Vector4::dot(*this, other);
     }
 
-    inline double length()
+    inline double length() const
     {
         return std::sqrt(x*x + y*y + z*z + w*w);
     }
 
-    inline bool operator ==(const Vector4& rhs)
+    inline bool operator ==(const Vector4& rhs) const
     {   //TODO: Epsilon check
         return (x == rhs.x) && (y == rhs.y) && (z == rhs.z) && (w == rhs.w);
     }
 
-    inline bool operator !=(const Vector4& rhs)
+    inline bool operator !=(const Vector4& rhs) const
     {
         return !(*this == rhs);
     }
@@ -123,6 +123,17 @@ public:
         z = rhl.z;
         w = rhl.w;
         return *this;
+    }
+
+    virtual Vector4& normalize()
+    {
+        (*this) /= this->length();
+        return *this;
+    }
+
+    virtual Vector4 normalized() const
+    {
+        return (*this) / this->length();
     }
 
     SERIALIZABLE(double, x, 0);

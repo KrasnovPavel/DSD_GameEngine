@@ -30,22 +30,29 @@ public:
 
     static double dot(const Vector3& first, const Vector3& second);
 
-    double dot(const Vector3 &other) const
+    inline double dot(const Vector3 &other) const
     {
         return Vector3::dot(*this, other);
     }
 
-    inline double length()
+    static Vector3 cross(const Vector3& first, const Vector3& second);
+
+    Vector3 cross(const Vector3& other) const
+    {
+        return Vector3::cross(*this, other);
+    }
+
+    inline double length() const
     {
         return std::sqrt(x*x + y*y + z*z);
     }
 
-    inline bool operator ==(const Vector3& rhs)
+    inline bool operator ==(const Vector3& rhs) const
     {   //TODO: Epsilon check
         return (x == rhs.x) && (y == rhs.y) && (z == rhs.z);
     }
 
-    inline bool operator !=(const Vector3& rhs)
+    inline bool operator !=(const Vector3& rhs) const
     {
         return !(*this == rhs);
     }
@@ -94,6 +101,12 @@ public:
         return lhs;
     }
 
+    friend inline Vector3 operator -(Vector3 rhs)
+    {
+        rhs *= -1;
+        return rhs;
+    }
+
     friend inline Vector3 operator *(Vector3 lhs, const double& rhs)
     {
         lhs *= rhs;
@@ -117,6 +130,17 @@ public:
         y = rhl.y;
         z = rhl.z;
         return *this;
+    }
+
+    inline Vector3& normalize()
+    {
+        (*this) /= this->length();
+        return *this;
+    }
+
+    inline Vector3 normalized() const
+    {
+        return (*this) / this->length();
     }
 
     SERIALIZABLE(double, x, 0);
