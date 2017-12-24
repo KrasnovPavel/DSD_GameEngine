@@ -11,7 +11,7 @@ void Mesh::setMesh(const std::vector<Triangle>& triangles)
     this->triangles = triangles;
 };
 
-std::pair<double*, std::size_t> Mesh::vertexArray() const
+double* Mesh::vertexArray() const
 {
     auto* verticles = new double[triangles.size()*9];
     for (unsigned i = 0; i < triangles.size(); ++i)
@@ -20,5 +20,5 @@ std::pair<double*, std::size_t> Mesh::vertexArray() const
         std::memcpy(verticles + i*9, arr, sizeof(double)*9);
         delete[] arr;
     }
-    return std::make_pair(verticles, sizeof(double)*9*triangles.size());
+    return verticles;
 }

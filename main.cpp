@@ -6,10 +6,12 @@
 
 #include "DSD_Core/DSDBaseObject.h"
 #include "DSD_Core/Mesh.h"
+#include "DSD_Core/MeshParcerSTL.h"
 
-#define ORTHO_SCALE 1.
+#define ORTHO_SCALE 50.
 
 Mesh m;
+double angle = 0;
 
 void display(void)
 {
@@ -30,16 +32,21 @@ void display(void)
             win_aspect * ORTHO_SCALE,
             -ORTHO_SCALE,
             ORTHO_SCALE,
-            -1., 1.);
-
+            1000., -1000.);
+    angle += 0.02;
+    auto tmp = m.rotation.toAxisAngle();
+    glTranslated(m.position.x, m.position.y, m.position.z);
+    glRotated(tmp.second * 180. * M_1_PI, tmp.first.x, tmp.first.y, tmp.first.z);
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
     glPushMatrix();
 
     glEnableClientState(GL_VERTEX_ARRAY);
-    glVertexPointer(3, GL_DOUBLE, 0, m.vertexArray().first);
+    double* arr = m.vertexArray();
+    glVertexPointer(3, GL_DOUBLE, 0, arr);
     glDrawArrays(GL_TRIANGLES, 0, m.amountOfVerticles());
+    delete[] arr;
 
     glPopMatrix();
 
@@ -48,17 +55,16 @@ void display(void)
 
 void repaint(void)
 {
-//    m.position += Vector3(0.001, 0 , 0);
-    m.rotation *= Quaternion(0.002, Vector3(0, 0, 1));
+    m.rotation *= Quaternion(0.005, Vector3(0, 1, 0));
+    m.rotation.logObject();
+//    m.position -= Vector3(0, 0, 0.02);
     glutPostRedisplay();
 }
 
 int main(int argc, char* argv[])
 {
-    std::vector<Triangle> tr {Triangle(Vector3(0, 0.5, 0),    Vector3(0.5, -0, 0), Vector3(-0.5, -0, 0)),
-                              Triangle(Vector3(-0.5, 0.5, 0), Vector3(0, -0, 0),   Vector3(-1, -0, 0)),
-                              Triangle(Vector3(0.5, 0.5, 0),  Vector3(1, -0, 0),   Vector3(0, -0, 0))};
-    m.setMesh(tr);
+    MeshParcerSTL mp("model.stl");
+    m.setMesh(mp.parce());
 
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE);
@@ -66,17 +72,10 @@ int main(int argc, char* argv[])
     glutCreateWindow("DSDGameEngine");
     glutDisplayFunc(display);
     glutIdleFunc(repaint);
+    glEnable (GL_DEPTH_TEST);
 
     glutMainLoop();
 
-//    SerializationController sc;
-//
-//    FileController::writeToFile("test.sav", sc.serialize());
-//
-//    ReadByteArray rarr = FileController::readFromFile("test.sav");
-//    sc.deserialize(rarr);
-//
-//    std::vector<DSDBaseObject*> newObjects = sc.newObjects();
 
     Logger::JoinThread();
 

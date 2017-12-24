@@ -29,6 +29,14 @@ public:
         this->w = w;
     }
 
+    inline void set(const double& x, const double& y, const double& z, const double& w)
+    {
+        this->x = x;
+        this->y = y;
+        this->z = z;
+        this->w = w;
+    }
+
     static double dot(const Vector4& first, const Vector4& second);
 
     inline double dot(const Vector4 &other) const

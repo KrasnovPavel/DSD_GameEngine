@@ -21,18 +21,20 @@ public:
     Mesh(Mesh&& other) noexcept
             : position(other.position),
               rotation(other.rotation),
+              scale(other.scale),
               triangles(other.triangles),
               DSDBaseObject(other) {}
 
     Mesh(const Mesh& other)
             : position(other.position),
               rotation(other.rotation),
+              scale(other.scale),
               triangles(other.triangles),
               DSDBaseObject(other) {}
 
     void setMesh(const std::vector<Triangle>& triangles);
 
-    std::pair<double*, std::size_t> vertexArray() const;
+    double* vertexArray() const;
 
     inline std::size_t amountOfVerticles() const
     {
@@ -49,10 +51,8 @@ public:
 
     SERIALIZABLE(Vector3, position, Vector3());
     SERIALIZABLE(Quaternion, rotation, Quaternion());
+    SERIALIZABLE(Vector3, scale, Vector3());
     std::vector<Triangle> triangles;
-
 };
 
 #endif //DSD_GAMEENGINE_MESH_H
-
-

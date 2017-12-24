@@ -17,3 +17,8 @@ Vector3 Vector3::cross(const Vector3 &first, const Vector3 &second)
                    first.z*second.x-first.x*second.z,
                    first.x*second.y-first.y*second.x);
 }
+
+std::string Vector3::toString() const
+{
+    return "{" + std::to_string(x) + ", " + std::to_string(y) + ", " + std::to_string(z) + "}";
+}

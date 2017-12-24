@@ -8,28 +8,27 @@ INIT_REFLECTION(Quaternion);
 
 Quaternion::Quaternion(const double &angle, const Vector3 &axis)
 {
-    vector = axis * std::sin(angle/2);
+    vector = axis.normalized() * std::sin(angle/2);
     scalar = std::cos(angle/2);
+    calculate();
     normalize();
+//    logObject();
 }
 
 Quaternion::Quaternion(const double &roll, const double &pitch, const double &yaw)
 {
     Quaternion r = Quaternion(roll, Vector3(1, 0, 0));
-    Quaternion p = Quaternion(roll, Vector3(0, 1, 0));
-    Quaternion y = Quaternion(roll, Vector3(0, 0, 1));
+    Quaternion p = Quaternion(pitch, Vector3(0, 1, 0));
+    Quaternion y = Quaternion(yaw, Vector3(0, 0, 1));
 
     *this = r * p * y;
+    calculate();
     normalize();
 }
 
 Vector3& Quaternion::rotateVector(Vector3 &vector) const
 {
     Quaternion v(0, vector.x, vector.y, vector.z);
-//    Quaternion tmp, inv = inverted();
-//    tmp.scalar = vector.dot(v.vector);
-//    tmp.vector = Vector3::cross(vector, v.vector) + vector*v.scalar + v.vector*scalar;
-//    vector = Vector3::cross(tmp.vector, inv.vector) + tmp.vector*inv.scalar + inv.vector*tmp.scalar;
     vector = (*this * v * inverted()).vector;
     return vector;
 }
@@ -41,16 +40,36 @@ Vector3 Quaternion::rotatedVector(Vector3 vector) const
 
 Quaternion &Quaternion::operator*=(const Quaternion &rhs)
 {
-//    double tmp = vector.dot(rhs.vector);
-//    vector = Vector3::cross(vector, rhs.vector) + vector*rhs.scalar + rhs.vector*scalar;
-//    scalar = tmp;
-    Quaternion res;
-    res.scalar = scalar * rhs.scalar - vector.x * rhs.vector.x - vector.y * rhs.vector.y - vector.z * rhs.vector.z;
-    res.vector.x = scalar * rhs.vector.x + vector.x * rhs.scalar + vector.y * rhs.vector.z - vector.z * rhs.vector.y;
-    res.vector.y = scalar * rhs.vector.y - vector.x * rhs.vector.z + vector.y * rhs.scalar + vector.z * rhs.vector.x;
-    res.vector.z = scalar * rhs.vector.z + vector.x * rhs.vector.y - vector.y * rhs.vector.x + vector.z * rhs.scalar;
-//    res.normalize();
-    *this = res;
+    double tmp = scalar * rhs.scalar - vector.dot(rhs.vector);
+    vector = Vector3::cross(vector, rhs.vector) + vector*rhs.scalar + rhs.vector*scalar;
+    scalar = tmp;
+    calculate();
+    normalize();
     return *this;
+}
+
+void Quaternion::calculate()
+{
+    m_invLength = 1 / std::sqrt(vector.x*vector.x + vector.y*vector.y + vector.z*vector.z + scalar*scalar);
+    m_angle = 2*std::acos(scalar);
+    m_axis = vector / std::sqrt(1-scalar*scalar);
+}
+
+Quaternion::Quaternion(const double &w, const double &x, const double &y, const double &z)
+        : scalar(w), vector(x, y, z)
+{
+    calculate();
+}
+
+std::pair<Vector3, double> Quaternion::toAxisAngle() const
+{
+    return std::make_pair(m_axis, m_angle);
+}
+
+std::string Quaternion::toString() const
+{
+    auto tmp = toAxisAngle();
+    return "{" + tmp.first.toString() + ", " + std::to_string(tmp.second * 180 * M_1_PI) + "}";
+//    return "{" + vector.toString() + ", " + std::to_string(scalar) + "}";
 }
 

@@ -59,8 +59,8 @@ private:
         auto diffH = std::chrono::duration_cast<std::chrono::hours>(engineLocalTime);
 
         std::string result = std::to_string(diffH.count()) + ":" +
-                             std::to_string(diffM.count()) + ":" +
-                             std::to_string(engineLocalTime.count());
+                             std::to_string(diffM.count() - diffH.count()*60) + ":" +
+                             std::to_string(engineLocalTime.count() - diffM.count()*60);
         return result;
     }
 

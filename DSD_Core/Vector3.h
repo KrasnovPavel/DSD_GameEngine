@@ -21,7 +21,14 @@ public:
     Vector3(const Vector3& other)
         : x(other.x), y(other.y), z(other.z), DSDBaseObject(other) {}
 
-    Vector3(const double& x, const double& y, const double& z)
+    inline Vector3(const double& x, const double& y, const double& z)
+    {
+        this->x = x;
+        this->y = y;
+        this->z = z;
+    }
+
+    void set(const double& x, const double& y, const double& z)
     {
         this->x = x;
         this->y = y;
@@ -142,6 +149,8 @@ public:
     {
         return (*this) / this->length();
     }
+
+    std::string toString() const override;
 
     SERIALIZABLE(double, x, 0);
     SERIALIZABLE(double, y, 0);

@@ -5,10 +5,10 @@
 #ifndef DSD_GAMEENGINE_FILECONTROLLER_H
 #define DSD_GAMEENGINE_FILECONTROLLER_H
 
-#include <exception>
 #include <fstream>
 #include <string>
 
+#include "Exceptions.h"
 #include "ReadByteArray.h"
 #include "WriteByteArray.h"
 
@@ -16,26 +16,6 @@
  * @addtogroup Serialization
  * @{
  */
-
-/**
- * @brief The FileOpeningFaliure class
- */
-class FileOpeningFaliure : public std::exception
-{
-public:
-    explicit FileOpeningFaliure(std::string filename)
-    {
-        m_str = "Unable to open file: " + filename;
-    }
-    
-    const char *what() const noexcept override
-    {
-        return m_str.c_str();
-    }
-
-private:   
-    std::string m_str;
-};
 
 /**
  * @brief The FileController class

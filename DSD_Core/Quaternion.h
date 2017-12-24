@@ -9,6 +9,7 @@
 
 #include "DSDBaseObject.h"
 #include "Vector3.h"
+#include "Vector4.h"
 
 class Quaternion : public DSDBaseObject
 {
@@ -34,24 +35,26 @@ public:
 
     inline double length() const
     {
-        return std::sqrt(vector.x*vector.x + vector.y*vector.y + vector.z*vector.z + scalar*scalar);
+        return 1/m_invLength;
     }
 
     inline Quaternion& normalize()
     {
-        (*this) /= this->length();
+        (*this) = normalized();
+        calculate();
         return *this;
     }
 
     inline Quaternion normalized() const
     {
-        return (*this) / this->length();
+        return (*this) * m_invLength;
     }
 
     Quaternion& operator=(const Quaternion& rhl)
     {
         vector = rhl.vector;
         scalar = rhl.scalar;
+        calculate();
         return *this;
     }
 
@@ -67,30 +70,38 @@ public:
 
     inline Quaternion inverted() const
     {
-        return  Quaternion(scalar, -vector);
+        return Quaternion(scalar, -vector);
     }
 
-private:
-    Quaternion(const double& w, const double& x, const double& y, const double& z)
-            : scalar(w), vector(x, y, z) {}
+    std::pair<Vector3, double> toAxisAngle() const;
 
-    inline Quaternion& operator /=(const double& rhs)
+    std::string toString() const override;
+
+private:
+    void calculate();
+
+    Quaternion(const double& w, const double& x, const double& y, const double& z);
+
+    inline Quaternion& operator *=(const double& rhs)
     {
-        vector.x /= rhs;
-        vector.y /= rhs;
-        vector.z /= rhs;
-        scalar /= rhs;
+        vector.x *= rhs;
+        vector.y *= rhs;
+        vector.z *= rhs;
+        scalar *= rhs;
+        calculate();
         return *this;
     }
 
-    friend inline Quaternion operator /(Quaternion lhs, const double& rhs)
+    friend inline Quaternion operator *(Quaternion lhs, const double& rhs)
     {
-        lhs /= rhs;
+        lhs *= rhs;
         return lhs;
     }
 
     SERIALIZABLE(Vector3, vector, Vector3());
     SERIALIZABLE(double, scalar, 1);
+    double m_invLength, m_angle;
+    Vector3 m_axis;
 };
 
 #endif //DSD_GAMEENGINE_QUATERNION_H

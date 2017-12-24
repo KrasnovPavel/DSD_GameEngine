@@ -12,7 +12,7 @@ void FileController::writeToFile(std::string filename, const WriteByteArray &dat
         out.write(data.data(), data.length());
         out.close();
     }
-    else throw (FileOpeningFaliure(filename));
+    else throw FileOpeningFaliure(filename);
 }
 
 ReadByteArray FileController::readFromFile(std::string filename)
@@ -27,5 +27,5 @@ ReadByteArray FileController::readFromFile(std::string filename)
         in.close();
         return ReadByteArray(data, (std::size_t)size);
     }
-    else throw (FileOpeningFaliure(filename));
+    else throw FileOpeningFaliure(filename);
 }
