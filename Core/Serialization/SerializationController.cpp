@@ -75,13 +75,13 @@ void SerializationController::addSerializableObject(DSDBaseObject * object)
 void SerializationController::removeSerializableObject(DSDBaseObject * object)
 {
     m_removedObjects.push_back(object->objectID());
-    object->setObjectID(0); // TODO:
+    object->setObjectID(0);
     m_objects.erase(object->objectID());
 }
 
 std::size_t SerializationController::sizeOfObjects()
 {
-    std::size_t result = 12 + (m_removedObjects.size() << 2) + (m_objects.size() << 3); //TODO: count deleting object
+    std::size_t result = 12 + (m_removedObjects.size() << 2) + (m_objects.size() << 3);
     for (auto& obj: m_objects)
     {
         result += obj.second->serializedSize();

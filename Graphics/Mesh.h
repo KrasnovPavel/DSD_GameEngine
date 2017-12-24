@@ -6,53 +6,59 @@
 #define DSD_GAMEENGINE_MESH_H
 
 #include <vector>
+#include <string>
 
 #include "Core/DSDBaseObject.h"
 #include "Core/Math/Quaternion.h"
 #include "Core/Math/Vector3.h"
-#include "Triangle.h"
 
 class Mesh : public DSDBaseObject
 {
     REFLECTION(Mesh);
 public:
-    Mesh() {}
+    Mesh() : m_vertices(nullptr), m_normals(nullptr), m_amountOfVertices(0) {}
 
-    Mesh(Mesh&& other) noexcept
-            : position(other.position),
-              rotation(other.rotation),
-              scale(other.scale),
-              triangles(other.triangles),
-              DSDBaseObject(other) {}
+    explicit Mesh(const std::string& meshFileName,
+                  const Vector3& position = Vector3(),
+                  const Quaternion& rotation = Quaternion(),
+                  const Vector3& scale = Vector3());
 
-    Mesh(const Mesh& other)
-            : position(other.position),
-              rotation(other.rotation),
-              scale(other.scale),
-              triangles(other.triangles),
-              DSDBaseObject(other) {}
+    Mesh(Mesh&& other) noexcept;
 
-    void setMesh(const std::vector<Triangle>& triangles);
+    Mesh(const Mesh& other);
 
-    double* vertexArray() const;
+    void setMesh(const std::string& meshFileName);
 
-    inline std::size_t amountOfVerticles() const
+    inline const double* vertexArray() const
     {
-        return triangles.size() * 3;
+        return m_vertices;
     }
 
-    Mesh& operator=(const Mesh& rhl)
+    inline const double* normalArray()
     {
-        position  = rhl.position;
-        rotation  = rhl.rotation;
-        triangles = rhl.triangles;
-        return  *this;
+        return m_normals;
     }
+
+    inline std::size_t amountOfVertices() const
+    {
+        return m_amountOfVertices;
+    }
+
+    void draw() const;
+
+    Mesh& operator=(const Mesh& rhl);
 
     SERIALIZABLE(Vector3, position, Vector3());
     SERIALIZABLE(Quaternion, rotation, Quaternion());
     SERIALIZABLE(Vector3, scale, Vector3());
-    std::vector<Triangle> triangles;
+
+private:
+    void copyVertices(double *vertices, double *normals, const std::size_t& amountOfVertices);
+
+    SERIALIZABLE(std::string, m_meshFileName, "");
+    double* m_vertices;
+    double* m_normals;
+    std::size_t m_amountOfVertices, m_amountOfData;
 };
 
 #endif //DSD_GAMEENGINE_MESH_H

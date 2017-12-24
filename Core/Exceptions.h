@@ -9,14 +9,15 @@
 
 #include <exception>
 #include <string>
+#include <vector>
 
 /**
- * @brief The FileOpeningFaliure class
+ * @brief The FileOpeningFailure class
  */
-class FileOpeningFaliure : public std::exception
+class FileOpeningFailure : public std::exception
 {
 public:
-    explicit FileOpeningFaliure(const std::string& filename)
+    explicit FileOpeningFailure(const std::string& filename)
     {
         m_str = "Unable to open file: " + filename;
     }
@@ -39,9 +40,18 @@ private:
 class FileFormatError : public std::exception
 {
 public:
-    explicit FileFormatError(const std::string& filename)
-    {   //TODO: list of supported formats
-        m_str = "Format of: " + filename + "is not supported. \n Supported formats:\n ASCII STL.";
+    /**
+     * Constructor
+     * @param filename
+     * @param supportedFormats
+     */
+    FileFormatError(const std::string& filename, const std::vector<std::string>& supportedFormats)
+    {
+        m_str = "\nFormat of: \"" + filename + "\" is not supported. \nSupported formats:\n";
+        for (auto s: supportedFormats)
+        {
+            m_str += "    " + s + "\n";
+        }
     }
 
     const char *what() const noexcept override
@@ -57,14 +67,19 @@ private:
 /**
  * @brief The FileParcingError class
  *
- * @details This exception throws if program can't parce file.
+ * @details This exception throws if program can't parse file.
  */
-class FileParcingError : public std::exception
+class FileParsingError : public std::exception
 {
 public:
-    explicit FileParcingError(const std::string& filename, const std::string& errorName = "")
-    {   //TODO: list of supported formats
-        m_str = "Error" + (!errorName.empty()?" \""+errorName+"\"":"") + " occurred while parcing: " + filename;
+    /**
+     * Constructor
+     * @param filename
+     * @param errorName
+     */
+    FileParsingError(const std::string& filename, const std::string& errorName = "")
+    {
+        m_str = "Error" + (!errorName.empty()?" \""+errorName+"\"":"") + " occurred while parsing: " + filename;
     }
 
     const char *what() const noexcept override

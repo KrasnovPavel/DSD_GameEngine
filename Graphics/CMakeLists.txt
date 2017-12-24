@@ -1,8 +1,8 @@
 cmake_minimum_required(VERSION 3.8)
 project(Graphics)
 
-set(SOURCE_FILES Triangle.h Triangle.cpp Mesh.h Mesh.cpp Parsers/MeshParser.h Parsers/MeshParser.cpp
-        Parsers/MeshParserSTL.cpp Parsers/MeshParserSTL.h)
+set(SOURCE_FILES Mesh.h Mesh.cpp MeshParser.h MeshParser.cpp
+        )
 
 
 add_library(Graphics SHARED ${SOURCE_FILES})
