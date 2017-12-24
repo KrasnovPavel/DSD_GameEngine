@@ -5,15 +5,15 @@
 #ifndef DSD_GAMEENGINE_MESHPARCERSTL_H
 #define DSD_GAMEENGINE_MESHPARCERSTL_H
 
-#include "MeshParcer.h"
+#include "MeshParser.h"
 
 #include <string>
 #include <sstream>
 
-class MeshParcerSTL : public MeshParcer
+class MeshParserSTL : public MeshParser
 {
 public:
-    explicit MeshParcerSTL(const std::string &filename);
+    explicit MeshParserSTL(const std::string &filename);
 
     std::vector<Triangle> parce() const override;
 

@@ -7,7 +7,7 @@
 
 #include <cmath>
 
-#include "DSDBaseObject.h"
+#include "Core/DSDBaseObject.h"
 
 class Vector4 : public DSDBaseObject
 {

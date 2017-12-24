@@ -2,7 +2,7 @@
 // Created by Pavel Krasnov (krasnovpavel0@gmail.com) on 17.12.17.
 //
 
-#include "MeshParcerSTL.h"
+#include "MeshParserSTL.h"
 
 #include <iostream>
 #include <istream>
@@ -10,7 +10,7 @@
 #include <string>
 
 
-MeshParcerSTL::MeshParcerSTL(const std::string &filename) : MeshParcer(filename)
+MeshParserSTL::MeshParserSTL(const std::string &filename) : MeshParser(filename)
 {
     m_format = ".stl";
     if (!checkFormat()) throw FileFormatError(filename);
@@ -19,7 +19,7 @@ MeshParcerSTL::MeshParcerSTL(const std::string &filename) : MeshParcer(filename)
     delete[] m_data;
 }
 
-std::vector<Triangle> MeshParcerSTL::parce() const
+std::vector<Triangle> MeshParserSTL::parce() const
 {
     std::vector<Triangle> mesh;
     std::string str;

@@ -12,8 +12,8 @@
 #include <vector>
 
 #include "Logging/Logger.h"
-#include "ReadByteArray.h"
-#include "WriteByteArray.h"
+#include "Serialization/ReadByteArray.h"
+#include "Serialization/WriteByteArray.h"
 
 typedef std::function<void(WriteByteArray&)> s_func;
 typedef std::function<void(ReadByteArray&)>  d_func;

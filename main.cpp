@@ -4,9 +4,9 @@
 #include <GL/gl.h>
 #include <GL/glut.h>
 
-#include "DSD_Core/DSDBaseObject.h"
-#include "DSD_Core/Mesh.h"
-#include "DSD_Core/MeshParcerSTL.h"
+#include "Core/DSDBaseObject.h"
+#include "Graphics/Mesh.h"
+#include "Graphics/Parsers/MeshParserSTL.h"
 
 #define ORTHO_SCALE 50.
 
@@ -56,14 +56,13 @@ void display(void)
 void repaint(void)
 {
     m.rotation *= Quaternion(0.005, Vector3(0, 1, 0));
-    m.rotation.logObject();
 //    m.position -= Vector3(0, 0, 0.02);
     glutPostRedisplay();
 }
 
 int main(int argc, char* argv[])
 {
-    MeshParcerSTL mp("model.stl");
+    MeshParserSTL mp("model.stl");
     m.setMesh(mp.parce());
 
     glutInit(&argc, argv);

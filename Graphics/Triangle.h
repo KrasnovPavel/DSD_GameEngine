@@ -7,9 +7,9 @@
 
 #include <vector>
 
-#include "DSDBaseObject.h"
-#include "Vector3.h"
-#include "Quaternion.h"
+#include "Core/DSDBaseObject.h"
+#include "Core/Math/Vector3.h"
+#include "Core/Math/Quaternion.h"
 
 class Triangle : public DSDBaseObject
 {

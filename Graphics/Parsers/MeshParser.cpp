@@ -2,10 +2,10 @@
 // Created by Pavel Krasnov (krasnovpavel0@gmail.com) on 17.12.17.
 //
 
-#include "MeshParcer.h"
+#include "MeshParser.h"
 
 
-MeshParcer::MeshParcer(const std::string &filename) : m_filename(filename)
+MeshParser::MeshParser(const std::string &filename) : m_filename(filename)
 {
     std::ifstream in(filename, std::ios::ate|std::ios::in|std::ios::binary);
     if (in.is_open())
@@ -19,13 +19,13 @@ MeshParcer::MeshParcer(const std::string &filename) : m_filename(filename)
     else throw FileOpeningFaliure(filename);
 }
 
-MeshParcer::~MeshParcer()
+MeshParser::~MeshParser()
 {
     if (m_data)
         delete[] m_data;
 }
 
-bool MeshParcer::checkFormat() const
+bool MeshParser::checkFormat() const
 {
     return (!m_format.empty()) &&
            (0 == m_filename.compare(m_filename.length() - m_format.length(), m_format.length(), m_format));

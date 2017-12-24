@@ -9,15 +9,15 @@
 #include <string>
 #include <vector>
 
-#include "Exceptions.h"
-#include "Triangle.h"
+#include "Core/Exceptions.h"
+#include "Graphics/Triangle.h"
 
-class MeshParcer
+class MeshParser
 {
 public:
-    explicit MeshParcer(const std::string& filename);
+    explicit MeshParser(const std::string& filename);
 
-    virtual ~MeshParcer();
+    virtual ~MeshParser();
 
     virtual std::vector<Triangle> parce() const = 0;
 
