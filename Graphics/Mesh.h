@@ -21,11 +21,13 @@ public:
     explicit Mesh(const std::string& meshFileName,
                   const Vector3& position = Vector3(),
                   const Quaternion& rotation = Quaternion(),
-                  const Vector3& scale = Vector3());
+                  const Vector3& scale = Vector3(1, 1, 1));
 
-    Mesh(Mesh&& other) noexcept;
+    Mesh(Mesh&& rhl) noexcept;
 
-    Mesh(const Mesh& other);
+    Mesh(const Mesh& rhl);
+
+    ~Mesh();
 
     void setMesh(const std::string& meshFileName);
 
@@ -46,19 +48,43 @@ public:
 
     void draw() const;
 
+    void setColor(float r, float g, float b, float a);
+
+    inline const float* getColor()
+    {
+        return m_color;
+    }
+
     Mesh& operator=(const Mesh& rhl);
 
     SERIALIZABLE(Vector3, position, Vector3());
     SERIALIZABLE(Quaternion, rotation, Quaternion());
     SERIALIZABLE(Vector3, scale, Vector3());
 
+    bool solid = true;
+
 private:
-    void copyVertices(double *vertices, double *normals, const std::size_t& amountOfVertices);
+    void copyVertices(double *vertices,
+                      double *normals,
+                      const std::size_t& amountOfVertices,
+                      double* gridVertices = nullptr);
+
+    void copyColors(double* solidColors, double* gridColors, double const* color);
+
+    void fillColors();
+
+    void generateGrid();
+
+    void drawSolid() const;
+
+    void drawGrid() const;
 
     SERIALIZABLE(std::string, m_meshFileName, "");
     double* m_vertices;
     double* m_normals;
-    std::size_t m_amountOfVertices, m_amountOfData;
+    double* m_gridVertices;
+    float* m_color = new float[4];
+    std::size_t m_amountOfVertices, m_amountOfData, m_amountOfGridData;
 };
 
 #endif //DSD_GAMEENGINE_MESH_H
