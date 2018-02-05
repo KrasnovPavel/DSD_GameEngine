@@ -48,7 +48,7 @@ public:
     FileFormatError(const std::string& filename, const std::vector<std::string>& supportedFormats)
     {
         m_str = "\nFormat of: \"" + filename + "\" is not supported. \nSupported formats:\n";
-        for (auto s: supportedFormats)
+        for (auto &s: supportedFormats)
         {
             m_str += "    " + s + "\n";
         }
@@ -77,7 +77,7 @@ public:
      * @param filename
      * @param errorName
      */
-    FileParsingError(const std::string& filename, const std::string& errorName = "")
+    explicit FileParsingError(const std::string &filename, const std::string &errorName = "")
     {
         m_str = "Error" + (!errorName.empty()?" \""+errorName+"\"":"") + " occurred while parsing: " + filename;
     }

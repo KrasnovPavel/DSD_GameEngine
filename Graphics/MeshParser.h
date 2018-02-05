@@ -10,7 +10,7 @@
 #include <unordered_map>
 #include <vector>
 
-typedef std::function<std::pair<std::vector<double>, std::vector<double>>(const std::string&)> parseFunction;
+typedef std::function<std::pair<std::vector<double>, std::vector<double>>(const std::string &)> parseFunction;
 
 class MeshParser
 {

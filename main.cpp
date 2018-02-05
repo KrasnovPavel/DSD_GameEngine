@@ -78,7 +78,7 @@ void display(void)
 
 void repaint(void)
 {
-    m.rotation *= Quaternion(0.005, Vector3(0, 1, 0));
+    m.rotation *= Quaternion(0.005, Vector3(0, 1, 1));
     m1.rotation *= Quaternion(0.005, Vector3(0, 0, 1));
     m1.position -= Vector3(0, 0, 1);
     glutPostRedisplay();
@@ -106,7 +106,7 @@ int main(int argc, char* argv[])
     m1.position = Vector3(0, 0, 100);
     m1.setColor(0, 1, 0, 1);
     m.setColor(0, 0, 1, 1);
-    m.solid = false;
+//    m.solid = false;
 
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);

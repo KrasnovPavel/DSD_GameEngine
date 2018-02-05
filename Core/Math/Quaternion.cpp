@@ -12,7 +12,6 @@ Quaternion::Quaternion(const double &angle, const Vector3 &axis)
     scalar = std::cos(angle/2);
     calculate();
     normalize();
-//    logObject();
 }
 
 Quaternion::Quaternion(const double &roll, const double &pitch, const double &yaw)
@@ -70,6 +69,5 @@ std::string Quaternion::toString() const
 {
     auto tmp = toAxisAngle();
     return "{" + tmp.first.toString() + ", " + std::to_string(tmp.second * 180 * M_1_PI) + "}";
-//    return "{" + vector.toString() + ", " + std::to_string(scalar) + "}";
 }
 
