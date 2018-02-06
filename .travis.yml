@@ -33,7 +33,9 @@ addons:
 script:
   - rm README.md
   - doxygen $DOXYFILE
+  - ls
   - ls | grep -v '^latex' | grep -v '^html' | xargs rm -rf
+  - ls
 
 deploy:
   provider: pages
