@@ -26,9 +26,7 @@ public:
      * @brief Default constructor
      * @details Fills values with zeroes.
      */
-    Vector3()
-            : x(0), y(0), z(0)
-    {}
+    Vector3() {}
 
     /**
      * @brief Default copy-constructor
@@ -263,7 +261,7 @@ public:
      * @param second
      * @return
      */
-    static inline double distance(const Vector3 &first, const Vector3 &second) const
+    static inline double distance(const Vector3 &first, const Vector3 &second)
     {
         return first.distance(second);
     }

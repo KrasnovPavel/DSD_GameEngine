@@ -12,9 +12,22 @@
 
 typedef std::function<std::pair<std::vector<double>, std::vector<double>>(const std::string &)> parseFunction;
 
+/**
+ * @addtogroup Graphics
+ * @{
+ */
+
+/**
+ * @brief Class for parsing 3D-objects files.
+ */
 class MeshParser
 {
 public:
+    /**
+     * @brief Parses given files.
+     * @param fileName
+     * @return
+     */
     static std::pair<std::vector<double>, std::vector<double>> parse(const std::string& fileName);
 
 private:
@@ -23,5 +36,9 @@ private:
     static std::unordered_map<std::string, parseFunction> functionsMap;
     static std::vector<std::string> formats;
 };
+
+/**
+ * @}
+ */
 
 #endif //DSD_GAMEENGINE_MESHPARCER_H
