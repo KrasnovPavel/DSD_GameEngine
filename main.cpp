@@ -1,12 +1,11 @@
-#include <string>
+
 #include <GL/gl.h>
 #include <GL/glut.h>
 
 #include "Logging/Logger.h"
-#include "Graphics/Mesh.h"
+#include "Phisics/ColisionVolumes/CollisionSphere.h"
 
-Mesh m("model.stl");
-Mesh m1("model1.stl");
+CollisionSphere sphere(Vector3(0, 0, 0), 20);
 
 double gridXZ[252];
 
@@ -66,27 +65,25 @@ void display(void)
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     gluPerspective(100, winAspect, 1, 1000);
+//    glOrtho(-100,100,-100,100,-100,100);
     gluLookAt(0, 70, 70, 0, 0, 0, 0, 1, 0);
 
     drawGrid();
 
-    m.draw();
-    m1.draw();
+    sphere.debugDraw(true);
 
     glutSwapBuffers();
 }
 
 void repaint(void)
 {
-    m.rotation *= Quaternion(0.005, Vector3(0, 1, 1));
-    m1.rotation *= Quaternion(0.005, Vector3(0, 0, 1));
-    m1.position -= Vector3(0, 0, 1);
+    sphere.setRotation(sphere.rotation() * Quaternion(M_PI / 180, 0, 0));
     glutPostRedisplay();
 }
 
 void initLight()
 {
-    glShadeModel (GL_SMOOTH);
+    glShadeModel(GL_SMOOTH);
     glEnable(GL_LIGHTING);
     glEnable(GL_LIGHT0);
     GLfloat lightAmbient[]  = {0.0, 0.0, 0.0, 1.0};
@@ -103,11 +100,6 @@ void initLight()
 
 int main(int argc, char* argv[])
 {
-    m1.position = Vector3(0, 0, 100);
-    m1.setColor(0, 1, 0, 1);
-    m.setColor(0, 0, 1, 1);
-//    m.solid = false;
-
     glutInit(&argc, argv);
     glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);
     glutInitWindowSize(800, 600);
