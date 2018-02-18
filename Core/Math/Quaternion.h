@@ -29,6 +29,14 @@ public:
      */
     Quaternion() {}
 
+
+    /**
+     * @brief Copy constructor
+     * @param other
+     */
+    Quaternion(const Quaternion& other) :
+            m_vector(other.m_vector), scalar(other.scalar) {}
+
     /**
      * @brief Constructs quaternion by angle and axis of rotation.
      * @param angle
@@ -83,7 +91,7 @@ public:
      */
     inline double length() const
     {
-        return 1/m_invLength;
+        return 1/std::sqrt(m_vector.x*m_vector.x + m_vector.y*m_vector.y + m_vector.z*m_vector.z + scalar*scalar);
     }
 
     /**
@@ -93,7 +101,6 @@ public:
     inline Quaternion& normalize()
     {
         (*this) = normalized();
-        calculate();
         return *this;
     }
 
@@ -103,7 +110,7 @@ public:
      */
     inline Quaternion normalized() const
     {
-        return (*this) * m_invLength;
+        return (*this) * (1/std::sqrt(m_vector.x*m_vector.x + m_vector.y*m_vector.y + m_vector.z*m_vector.z + scalar*scalar));
     }
 
     /**
@@ -113,24 +120,23 @@ public:
      */
     Quaternion& operator=(const Quaternion& rhl)
     {
-        vector = rhl.vector;
+        m_vector = rhl.m_vector;
         scalar = rhl.scalar;
-        calculate();
         return *this;
     }
 
     /**
-     * @brief Checks if two quaternoins are equality.
+     * @brief Checks if two quaternions are equal.
      * @param rhs
      * @return
      */
     inline bool operator ==(const Quaternion& rhs) const
     {   //TODO: Epsilon check
-        return (vector == rhs.vector) && (scalar == rhs.scalar);
+        return (m_vector == rhs.m_vector) && (scalar == rhs.scalar);
     }
 
     /**
-     * @brief Checks if two quaternoins are not equality.
+     * @brief Checks if two quaternions are not equal.
      * @param rhs
      * @return
      */
@@ -145,7 +151,7 @@ public:
      */
     inline Quaternion inverted() const
     {
-        return Quaternion(scalar, -vector);
+        return Quaternion(scalar, -m_vector.x, -m_vector.y, -m_vector.z);
     }
 
     /**
@@ -161,17 +167,15 @@ public:
     std::string toString() const override;
 
 private:
-    void calculate();
-
-    Quaternion(const double& w, const double& x, const double& y, const double& z);
+    Quaternion(const double& w, const double& x, const double& y, const double& z)
+            : scalar(w), m_vector(x, y, z)  {}
 
     inline Quaternion& operator *=(const double& rhs)
     {
-        vector.x *= rhs;
-        vector.y *= rhs;
-        vector.z *= rhs;
+        m_vector.x *= rhs;
+        m_vector.y *= rhs;
+        m_vector.z *= rhs;
         scalar *= rhs;
-        calculate();
         return *this;
     }
 
@@ -181,10 +185,8 @@ private:
         return lhs;
     }
 
-    SERIALIZABLE(Vector3, vector, Vector3());
+    SERIALIZABLE(Vector3, m_vector, Vector3());
     SERIALIZABLE(double, scalar, 1);
-    double m_invLength, m_angle;
-    Vector3 m_axis;
 };
 
 /**

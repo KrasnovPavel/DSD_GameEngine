@@ -8,9 +8,8 @@ INIT_REFLECTION(Quaternion);
 
 Quaternion::Quaternion(const double &angle, const Vector3 &axis)
 {
-    vector = axis.normalized() * std::sin(angle/2);
+    m_vector = axis.normalized() * std::sin(angle/2);
     scalar = std::cos(angle/2);
-    calculate();
     normalize();
 }
 
@@ -21,14 +20,14 @@ Quaternion::Quaternion(const double &roll, const double &pitch, const double &ya
     Quaternion y = Quaternion(yaw, Vector3(0, 0, 1));
 
     *this = r * p * y;
-    calculate();
     normalize();
 }
 
 Vector3& Quaternion::rotateVector(Vector3 &vector) const
 {
     Quaternion v(0, vector.x, vector.y, vector.z);
-    vector = (*this * v * inverted()).vector;
+    vector = (*this * v * inverted()).m_vector;
+
     return vector;
 }
 
@@ -39,30 +38,15 @@ Vector3 Quaternion::rotatedVector(Vector3 vector) const
 
 Quaternion &Quaternion::operator*=(const Quaternion &rhs)
 {
-    double tmp = scalar * rhs.scalar - vector.dot(rhs.vector);
-    vector = Vector3::cross(vector, rhs.vector) + vector*rhs.scalar + rhs.vector*scalar;
+    double tmp = scalar * rhs.scalar - m_vector.dot(rhs.m_vector);
+    m_vector = Vector3::cross(m_vector, rhs.m_vector) + m_vector*rhs.scalar + rhs.m_vector*scalar;
     scalar = tmp;
-    calculate();
-    normalize();
     return *this;
-}
-
-void Quaternion::calculate()
-{
-    m_invLength = 1 / std::sqrt(vector.x*vector.x + vector.y*vector.y + vector.z*vector.z + scalar*scalar);
-    m_angle = 2*std::acos(scalar);
-    m_axis = vector / std::sqrt(1-scalar*scalar);
-}
-
-Quaternion::Quaternion(const double &w, const double &x, const double &y, const double &z)
-        : scalar(w), vector(x, y, z)
-{
-    calculate();
 }
 
 std::pair<Vector3, double> Quaternion::toAxisAngle() const
 {
-    return std::make_pair(m_axis, m_angle);
+    return std::make_pair(m_vector / std::sqrt(1-scalar*scalar), 2*std::acos(scalar));
 }
 
 std::string Quaternion::toString() const
