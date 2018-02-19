@@ -9,10 +9,16 @@
 #include "Core/Math/Vector3.h"
 #include "Core/Math/Quaternion.h"
 
-//#ifdef Debug
+#ifndef NDEBUG
 #include <GL/gl.h>
 #include <GL/glut.h>
-//#endif
+#endif
+
+enum class CollisionType
+{
+    SPHERE,
+    BOX
+};
 
 class CollisionVolume
 {
@@ -78,6 +84,8 @@ public:
             delete[] vertices;
         }
     }
+
+    virtual CollisionType type() const = 0;
 
 protected:
     double *generateVertices(const Vector3 &min, const Vector3 &max)

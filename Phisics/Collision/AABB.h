@@ -32,13 +32,17 @@ public:
     {
         double d1x = second.min.x - first.max.x;
         double d1y = second.min.y - first.max.y;
+        double d1z = second.min.z - first.max.z;
         double d2x = first.min.x - second.max.x;
         double d2y = first.min.y - second.max.y;
+        double d2z = first.min.z - second.max.z;
 
         if (d1x > 0.0f ||
             d1y > 0.0f ||
+            d1z > 0.0f ||
             d2x > 0.0f ||
-            d2y > 0.0f)
+            d2y > 0.0f ||
+            d2z > 0.0f)
             return false;
 
         return true;

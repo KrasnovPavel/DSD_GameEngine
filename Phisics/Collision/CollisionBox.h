@@ -80,6 +80,11 @@ public:
         delete[] vertices;
     }
 
+    CollisionType type() const override
+    {
+        return CollisionType::BOX;
+    }
+
 protected:
     void calculateAABB() override
     {

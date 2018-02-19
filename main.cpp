@@ -3,7 +3,8 @@
 #include <GL/glut.h>
 
 #include "Logging/Logger.h"
-#include "Phisics/ColisionVolumes/CollisionSphere.h"
+#include "Phisics/Collision/CollisionSphere.h"
+#include "Phisics/Collision/CollisionBox.h"
 
 CollisionSphere sphere(Vector3(0, 0, 0), 20);
 

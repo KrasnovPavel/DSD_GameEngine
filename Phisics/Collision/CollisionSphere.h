@@ -62,6 +62,11 @@ public:
         }
     }
 
+    CollisionType type() const override
+    {
+        return CollisionType::SPHERE;
+    }
+
 protected:
     void calculateAABB() override
     {
