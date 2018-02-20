@@ -281,15 +281,16 @@ namespace DSD
         }
 
         /**
-         *
-         * @param rhl
+         * @brief Copy-assignment operator
+         * @param rhs
          * @return
          */
-        inline Vector3 &operator=(const Vector3 &rhl)
+        inline Vector3 &operator=(const Vector3 &rhs)
         {
-            x = rhl.x;
-            y = rhl.y;
-            z = rhl.z;
+            x = rhs.x;
+            y = rhs.y;
+            z = rhs.z;
+            static_cast<DSDBaseObject *>(this)->operator=(rhs);
             return *this;
         }
 

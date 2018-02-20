@@ -166,6 +166,18 @@ namespace DSD
         }
 
         /**
+         * @brief DSDBaseObject move constructor
+         * @param other
+         * @details All inheritors must have their own move constructor.
+         */
+        DSDBaseObject &operator=(const DSDBaseObject &other)
+        {
+            m_objectID = other.objectID();
+            return *this;
+        }
+
+
+        /**
          * @brief Represents class data as std::string
          * @return string reprisents class data
          */

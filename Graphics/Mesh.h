@@ -48,15 +48,15 @@ namespace DSD
 
         /**
          * @brief Copy constructor
-         * @param rhl
+         * @param rhs
          */
-        Mesh(Mesh &&rhl) noexcept;
+        Mesh(Mesh &&rhs) noexcept;
 
         /**
          * @brief Move constructor
-         * @param rhl
+         * @param rhs
          */
-        Mesh(const Mesh &rhl);
+        Mesh(const Mesh &rhs);
 
         /**
          * @brief Destructor
@@ -121,11 +121,11 @@ namespace DSD
         }
 
         /**
-         *
+         * @brief Copy-assignment operator
          * @param rhl
          * @return
          */
-        Mesh &operator=(const Mesh &rhl);
+        Mesh &operator=(const Mesh &rhs);
 
         /**
          * @brief Position of this mesh

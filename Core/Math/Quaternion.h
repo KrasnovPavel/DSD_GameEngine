@@ -120,14 +120,15 @@ namespace DSD
         }
 
         /**
-         *
-         * @param rhl
+         * @brief Copy-assignment operator
+         * @param rhs
          * @return
          */
-        Quaternion &operator=(const Quaternion &rhl)
+        Quaternion &operator=(const Quaternion &rhs)
         {
-            m_vector = rhl.m_vector;
-            scalar = rhl.scalar;
+            m_vector = rhs.m_vector;
+            scalar = rhs.scalar;
+            static_cast<DSDBaseObject *>(this)->operator=(rhs);
             return *this;
         }
 

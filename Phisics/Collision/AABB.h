@@ -7,20 +7,25 @@
 
 #include <algorithm>
 
+#include "Core/DSDBaseObject.h"
 #include "Core/Math/Vector3.h"
 
 namespace DSD
 {
-    class AABB
+    class AABB : public DSDBaseObject
     {
+    REFLECTION(AABB);
     public:
         AABB() : AABB(Vector3(), Vector3())
         {};
 
-        AABB(const AABB &other) : AABB(other.min, other.max)
+        AABB(const AABB &other) : DSDBaseObject(other), min(other.min), max(other.max)
         {}
 
-        AABB(Vector3 min, Vector3 max)
+        AABB(AABB &&other) : DSDBaseObject(other), min(other.min), max(other.max)
+        {}
+
+        AABB(Vector3 min, Vector3 max) : DSDBaseObject()
         {
             this->min.x = std::min(min.x, max.x);
             this->min.y = std::min(min.y, max.y);
@@ -28,6 +33,14 @@ namespace DSD
             this->max.x = std::max(min.x, max.x);
             this->max.y = std::max(min.y, max.y);
             this->max.z = std::max(min.z, max.z);
+        }
+
+        AABB &operator=(const AABB &rhs)
+        {
+            min = rhs.min;
+            max = rhs.max;
+            static_cast<DSDBaseObject *>(this)->operator=(rhs);
+            return *this;
         }
 
         static bool isCollide(const AABB &first, const AABB &second)
@@ -50,7 +63,8 @@ namespace DSD
             return true;
         }
 
-        Vector3 min, max;
+        SERIALIZABLE(Vector3, min, Vector3());
+        SERIALIZABLE(Vector3, max, Vector3());
     };
 }
 

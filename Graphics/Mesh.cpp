@@ -46,13 +46,14 @@ void Mesh::setMesh(const std::string &meshFileName)
     setColor(1.f, 1.f, 1.f, 1.f);
 }
 
-Mesh &Mesh::operator=(const Mesh &rhl)
+Mesh &Mesh::operator=(const Mesh &rhs)
 {
-    position = rhl.position;
-    rotation = rhl.rotation;
-    scale    = rhl.scale;
-    copyVertices(rhl.m_vertices, rhl.m_normals, rhl.m_amountOfVertices, rhl.m_gridVertices);
-    memcpy(m_color, rhl.m_color, 4*sizeof(float));
+    position = rhs.position;
+    rotation = rhs.rotation;
+    scale = rhs.scale;
+    copyVertices(rhs.m_vertices, rhs.m_normals, rhs.m_amountOfVertices, rhs.m_gridVertices);
+    memcpy(m_color, rhs.m_color, 4 * sizeof(float));
+    static_cast<DSDBaseObject *>(this)->operator=(rhs);
     return  *this;
 }
 

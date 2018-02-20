@@ -68,6 +68,8 @@ Manifold *CollisionChecker::checkVolumes(CollisionVolume *first, CollisionVolume
                     return check(static_cast<CollisionSphere*>(first), static_cast<CollisionSphere*>(second));
                 case CollisionType::BOX:
                     return check(static_cast<CollisionSphere*>(first), static_cast<CollisionBox*>(second));
+                case CollisionType::POINT:
+                    return check(static_cast<CollisionSphere *>(first), second);
             }
         case CollisionType::BOX:
             switch (second->type())
@@ -76,7 +78,43 @@ Manifold *CollisionChecker::checkVolumes(CollisionVolume *first, CollisionVolume
                     return check(static_cast<CollisionBox*>(first), static_cast<CollisionSphere*>(second));
                 case CollisionType::BOX:
                     return check(static_cast<CollisionBox*>(first), static_cast<CollisionBox*>(second));
+                case CollisionType::POINT:
+                    return check(static_cast<CollisionBox *>(first), second);
+            }
+        case CollisionType::POINT:
+            switch (second->type()) {
+                case CollisionType::SPHERE:
+                    return check(first, static_cast<CollisionSphere *>(second));
+                case CollisionType::BOX:
+                    return check(first, static_cast<CollisionBox *>(second));
+                case CollisionType::POINT:
+                    return check(first, second);
             }
     }
+    return nullptr;
+}
+
+Manifold *CollisionChecker::check(CollisionVolume *first, CollisionBox *second)
+{
+    return nullptr;
+}
+
+Manifold *CollisionChecker::check(CollisionBox *first, CollisionVolume *second)
+{
+    return check(second, first);
+}
+
+Manifold *CollisionChecker::check(CollisionVolume *first, CollisionSphere *second)
+{
+    return nullptr;
+}
+
+Manifold *CollisionChecker::check(CollisionSphere *first, CollisionVolume *second)
+{
+    return check(second, first);
+}
+
+Manifold *CollisionChecker::check(CollisionVolume *first, CollisionVolume *second)
+{
     return nullptr;
 }

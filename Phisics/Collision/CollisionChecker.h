@@ -28,6 +28,16 @@ namespace DSD
         static Manifold *check(CollisionSphere *first, CollisionBox *second);
 
         static Manifold *check(CollisionBox *first, CollisionBox *second);
+
+        static Manifold *check(CollisionVolume *first, CollisionBox *second);
+
+        static Manifold *check(CollisionBox *first, CollisionVolume *second);
+
+        static Manifold *check(CollisionVolume *first, CollisionSphere *second);
+
+        static Manifold *check(CollisionSphere *first, CollisionVolume *second);
+
+        static Manifold *check(CollisionVolume *first, CollisionVolume *second);
     };
 }
 
