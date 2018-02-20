@@ -4,6 +4,8 @@
 
 #include "WriteByteArray.h"
 
+using namespace DSD;
+
 template <>
 void WriteByteArray::write(const double& var)
 {

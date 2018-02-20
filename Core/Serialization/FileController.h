@@ -12,33 +12,35 @@
 #include "ReadByteArray.h"
 #include "WriteByteArray.h"
 
+namespace DSD
+{
 /**
  * @addtogroup Serialization
  * @{
  */
 
-/**
- * @brief The FileController class
- * @details Class for reading and writing Serialised data form/in file.
- */
-class FileController
-{
-public:
     /**
-     * @brief writeToFile Writes given byte array @a data in file
-     * @param filename File to write
-     * @param data Data to write
+     * @brief The FileController class
+     * @details Class for reading and writing Serialised data form/in file.
      */
-    static void writeToFile(std::string filename, const WriteByteArray& data);
+    class FileController
+    {
+    public:
+        /**
+         * @brief writeToFile Writes given byte array @a data in file
+         * @param filename File to write
+         * @param data Data to write
+         */
+        static void writeToFile(std::string filename, const WriteByteArray &data);
 
-    /**
-     * @brief readFromFile Reads byte array from file
-     * @param filename File to read from
-     * @return Byte array
-     */
-    static ReadByteArray readFromFile(std::string filename);
-};
-
+        /**
+         * @brief readFromFile Reads byte array from file
+         * @param filename File to read from
+         * @return Byte array
+         */
+        static ReadByteArray readFromFile(std::string filename);
+    };
+}
 /**
  * @}
  */

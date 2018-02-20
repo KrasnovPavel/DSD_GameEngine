@@ -4,6 +4,8 @@
 
 #include "SerializationController.h"
 
+using namespace DSD;
+
 unsigned SerializationController::m_counter = 1;
 
 const WriteByteArray& SerializationController::serialize()

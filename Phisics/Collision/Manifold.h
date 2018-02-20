@@ -7,14 +7,17 @@
 
 #include "CollisionVolume.h"
 
-class Manifold
+namespace DSD
 {
-public:
-    Manifold(CollisionVolume* first, CollisionVolume* second) : first(first), second(second) {};
+    class Manifold
+    {
+    public:
+        Manifold(CollisionVolume *first, CollisionVolume *second) : first(first), second(second)
+        {};
 
-    CollisionVolume* first;
-    CollisionVolume* second;
-};
-
+        CollisionVolume *first;
+        CollisionVolume *second;
+    };
+}
 
 #endif //DSD_GAMEENGINE_MANIFOLD_H

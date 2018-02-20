@@ -8,6 +8,8 @@
 #include "Mesh.h"
 #include "MeshParser.h"
 
+using namespace DSD;
+
 INIT_REFLECTION(Mesh)
 
 Mesh::Mesh(const std::string& meshFileName, const Vector3 &position, const Quaternion &rotation, const Vector3 &scale)

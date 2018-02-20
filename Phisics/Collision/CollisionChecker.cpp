@@ -4,6 +4,8 @@
 
 #include "CollisionChecker.h"
 
+using namespace DSD;
+
 std::vector<Manifold*> *CollisionChecker::checkAll(const std::vector<CollisionVolume *> &volumes)
 {
     auto result = new std::vector<Manifold*>();

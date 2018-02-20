@@ -4,6 +4,8 @@
 
 #include "FileController.h"
 
+using namespace DSD;
+
 void FileController::writeToFile(std::string filename, const WriteByteArray &data)
 {
     std::ofstream out(filename, std::ios::out|std::ios::binary);

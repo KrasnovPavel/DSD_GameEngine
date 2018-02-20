@@ -1,7 +1,7 @@
 cmake_minimum_required(VERSION 3.8)
 project(Phisics)
 
-set(SOURCE_FILES Collision/CollisionVolume.h Collision/CollisionSphere.h Collision/CollisionBox.h Collision/AABB.h Collision/CollisionChecker.cpp Collision/CollisionChecker.h Collision/Manifold.cpp Collision/Manifold.h)
+set(SOURCE_FILES Collision/CollisionVolume.h Collision/CollisionSphere.h Collision/CollisionBox.h Collision/AABB.h Collision/CollisionChecker.cpp Collision/CollisionChecker.h Collision/Manifold.h)
 
 
 add_library(Phisics SHARED ${SOURCE_FILES})

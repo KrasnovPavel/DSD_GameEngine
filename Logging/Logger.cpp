@@ -8,6 +8,8 @@
 #include <thread>
 #include "Logger.h"
 
+using namespace DSD;
+
 std::unordered_map<std::string, std::ofstream> Logger::m_files;
 std::thread Logger::m_thread = std::thread(LoggerControl);
 std::queue<typename Logger::LoggingData> Logger::m_tasks;

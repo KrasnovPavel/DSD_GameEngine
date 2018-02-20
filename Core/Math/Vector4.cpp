@@ -4,6 +4,8 @@
 
 #include "Vector4.h"
 
+using namespace DSD;
+
 INIT_REFLECTION(Vector4);
 
 double Vector4::dot(const Vector4& first, const Vector4& second)

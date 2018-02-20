@@ -5,88 +5,89 @@
 #ifndef DSD_GAMEENGINE_EXCEPTIONS_H
 #define DSD_GAMEENGINE_EXCEPTIONS_H
 
-#endif //DSD_GAMEENGINE_EXCEPTIONS_H
-
 #include <exception>
 #include <string>
 #include <vector>
 
-/**
- * @brief The FileOpeningFailure class
- */
-class FileOpeningFailure : public std::exception
+namespace DSD
 {
-public:
-    explicit FileOpeningFailure(const std::string& filename)
-    {
-        m_str = "Unable to open file: " + filename;
-    }
-
-    const char *what() const noexcept override
-    {
-        return m_str.c_str();
-    }
-
-private:
-    std::string m_str;
-};
-
-
-/**
- * @brief The FileFormatError class
- *
- * @details This exception throws if file format isn't supported.
- */
-class FileFormatError : public std::exception
-{
-public:
     /**
-     * Constructor
-     * @param filename
-     * @param supportedFormats
+     * @brief The FileOpeningFailure class
      */
-    FileFormatError(const std::string& filename, const std::vector<std::string>& supportedFormats)
+    class FileOpeningFailure : public std::exception
     {
-        m_str = "\nFormat of: \"" + filename + "\" is not supported. \nSupported formats:\n";
-        for (auto &s: supportedFormats)
+    public:
+        explicit FileOpeningFailure(const std::string &filename)
         {
-            m_str += "    " + s + "\n";
+            m_str = "Unable to open file: " + filename;
         }
-    }
 
-    const char *what() const noexcept override
-    {
-        return m_str.c_str();
-    }
+        const char *what() const noexcept override
+        {
+            return m_str.c_str();
+        }
 
-private:
-    std::string m_str;
-};
+    private:
+        std::string m_str;
+    };
 
 
-/**
- * @brief The FileParcingError class
- *
- * @details This exception throws if program can't parse file.
- */
-class FileParsingError : public std::exception
-{
-public:
     /**
-     * Constructor
-     * @param filename
-     * @param errorName
+     * @brief The FileFormatError class
+     * @details This exception throws if file format isn't supported.
      */
-    explicit FileParsingError(const std::string &filename, const std::string &errorName = "")
+    class FileFormatError : public std::exception
     {
-        m_str = "Error" + (!errorName.empty()?" \""+errorName+"\"":"") + " occurred while parsing: " + filename;
-    }
+    public:
+        /**
+         * Constructor
+         * @param filename
+         * @param supportedFormats
+         */
+        FileFormatError(const std::string &filename, const std::vector<std::string> &supportedFormats)
+        {
+            m_str = "\nFormat of: \"" + filename + "\" is not supported. \nSupported formats:\n";
+            for (auto &s: supportedFormats) {
+                m_str += "    " + s + "\n";
+            }
+        }
 
-    const char *what() const noexcept override
+        const char *what() const noexcept override
+        {
+            return m_str.c_str();
+        }
+
+    private:
+        std::string m_str;
+    };
+
+
+    /**
+     * @brief The FileParcingError class
+     * @details This exception throws if program can't parse file.
+     */
+    class FileParsingError : public std::exception
     {
-        return m_str.c_str();
-    }
+    public:
+        /**
+         * Constructor
+         * @param filename
+         * @param errorName
+         */
+        explicit FileParsingError(const std::string &filename, const std::string &errorName = "")
+        {
+            m_str = "Error" + (!errorName.empty() ? " \"" + errorName + "\"" : "") + " occurred while parsing: " +
+                    filename;
+        }
 
-private:
-    std::string m_str;
-};
+        const char *what() const noexcept override
+        {
+            return m_str.c_str();
+        }
+
+    private:
+        std::string m_str;
+    };
+}
+
+#endif //DSD_GAMEENGINE_EXCEPTIONS_H

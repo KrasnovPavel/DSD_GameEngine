@@ -8,105 +8,109 @@
 #include <cstring>
 #include <stdexcept>
 
+namespace DSD
+{
 /**
  * @addtogroup Serialization
  * @{
  */
 
-/**
- * @brief The WriteByteArray class
- * @details Class implements write-only byte array
- */
-class WriteByteArray
-{
-public:
     /**
-     * @brief WriteByteArray Default constructor
-     * @details Doesn't allocate memory and can not be used.
-     * For usage call WriteByteArray::reset(const std::size_t& newSize).
+     * @brief The WriteByteArray class
+     * @details Class implements write-only byte array
      */
-    WriteByteArray() : m_array(nullptr), m_length(0) {}
-
-    /**
-     * @brief WriteByteArray Constructor
-     * @details Allocate @a length bytes for writing.
-     * @param length
-     */
-    explicit WriteByteArray(const std::size_t& length)
-            : m_array(new char[length]), m_length(length) {}
-
-    /**
-     * @brief ~WriteByteArray Defult destructor
-     */
-    ~WriteByteArray()
+    class WriteByteArray
     {
-        delete[] m_array;
-    }
+    public:
+        /**
+         * @brief WriteByteArray Default constructor
+         * @details Doesn't allocate memory and can not be used.
+         * For usage call WriteByteArray::reset(const std::size_t& newSize).
+         */
+        WriteByteArray() : m_array(nullptr), m_length(0)
+        {}
 
-    /**
-     * @brief length Returns length of byte array
-     * @return
-     */
-    inline const std::size_t& length() const
-    {
-        return m_length;
-    }
+        /**
+         * @brief WriteByteArray Constructor
+         * @details Allocate @a length bytes for writing.
+         * @param length
+         */
+        explicit WriteByteArray(const std::size_t &length)
+                : m_array(new char[length]), m_length(length)
+        {}
 
-    /**
-     * @brief write Writes data
-     * @details Writes presents @a var as byte array and writes it.
-     * @throw std::out_of_range if sizeof( @a T ) more than bytes till end of array.
-     * @param var Variable to write
-     * @tparam T Type to write
-     */
-    template <typename t>
-    void write(const t& var);
+        /**
+         * @brief ~WriteByteArray Defult destructor
+         */
+        ~WriteByteArray()
+        {
+            delete[] m_array;
+        }
 
-    /**
-     * @brief data Returns const pointer to data
-     * @return
-     */
-    inline const char* data() const
-    {
-        return m_array;
-    }
+        /**
+         * @brief length Returns length of byte array
+         * @return
+         */
+        inline const std::size_t &length() const
+        {
+            return m_length;
+        }
 
-    /**
-     * @brief reset Reset byte array
-     * @details Deletes old data and allocate @a newLength bytes for new byte array.
-     * @param newLength
-     */
-    void reset(const std::size_t& newLength)
-    {
-        delete[] m_array;
-        m_length = newLength;
-        m_array = new char[m_length];
-        m_pos = 0;
-    }
+        /**
+         * @brief write Writes data
+         * @details Writes presents @a var as byte array and writes it.
+         * @throw std::out_of_range if sizeof( @a T ) more than bytes till end of array.
+         * @param var Variable to write
+         * @tparam T Type to write
+         */
+        template<typename t>
+        void write(const t &var);
 
-private:
+        /**
+         * @brief data Returns const pointer to data
+         * @return
+         */
+        inline const char *data() const
+        {
+            return m_array;
+        }
+
+        /**
+         * @brief reset Reset byte array
+         * @details Deletes old data and allocate @a newLength bytes for new byte array.
+         * @param newLength
+         */
+        void reset(const std::size_t &newLength)
+        {
+            delete[] m_array;
+            m_length = newLength;
+            m_array = new char[m_length];
+            m_pos = 0;
+        }
+
+    private:
+        template<typename T>
+        void basicConversion(const T &var);
+
+        char *m_array;
+        std::size_t m_length;
+        std::size_t m_pos = 0;
+
+        void checkLength(std::size_t size)
+        {
+            if (m_pos + size > m_length) throw (std::out_of_range("WriteByteArray::write"));
+        }
+    };
+
     template<typename T>
-    void basicConversion(const T& var);
-
-    char* m_array;
-    std::size_t m_length;
-    std::size_t m_pos = 0;
-
-    void checkLength(std::size_t size)
+    void WriteByteArray::basicConversion(const T &var)
     {
-        if (m_pos+size > m_length) throw(std::out_of_range("WriteByteArray::write"));
+        const std::size_t size = sizeof(T);
+        checkLength(size);
+        std::memcpy((m_array + m_pos), &var, size);
+        m_pos += size;
     }
-};
-
-template<typename T>
-void WriteByteArray::basicConversion(const T& var)
-{
-    const std::size_t size = sizeof(T);
-    checkLength(size);
-    std::memcpy((m_array+m_pos), &var, size);
-    m_pos += size;
 }
-
 /**
  * @}
  */

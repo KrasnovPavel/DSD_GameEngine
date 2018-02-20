@@ -4,6 +4,8 @@
 
 #include "Quaternion.h"
 
+using namespace DSD;
+
 INIT_REFLECTION(Quaternion);
 
 Quaternion::Quaternion(const double &angle, const Vector3 &axis)

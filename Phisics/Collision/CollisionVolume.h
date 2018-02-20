@@ -14,168 +14,170 @@
 #include <GL/glut.h>
 #endif
 
-enum class CollisionType
+namespace DSD
 {
-    SPHERE,
-    BOX
-};
-
-class CollisionVolume
-{
-public:
-    CollisionVolume(const Vector3 &position, const Quaternion &rotation) :
-            m_position(position), m_rotation(rotation), isAABBChanged(true)
-    {}
-
-    CollisionVolume(const CollisionVolume &other) : CollisionVolume(other.m_position, other.m_rotation)
-    {}
-
-    inline void setPosition(const Vector3 &newPosition)
+    enum class CollisionType
     {
-        m_position = newPosition;
-        isAABBChanged = true;
-    }
+        SPHERE,
+        BOX
+    };
 
-    inline void setRotation(const Quaternion &newRotation)
+    class CollisionVolume
     {
-        m_rotation = newRotation;
-        isAABBChanged = true;
-    }
+    public:
+        CollisionVolume(const Vector3 &position, const Quaternion &rotation) :
+                m_position(position), m_rotation(rotation), isAABBChanged(true)
+        {}
 
-    inline const Vector3 &position() const
-    {
-        return m_position;
-    }
+        CollisionVolume(const CollisionVolume &other) : CollisionVolume(other.m_position, other.m_rotation)
+        {}
 
-    inline const Quaternion &rotation() const
-    {
-        return m_rotation;
-    }
-
-    inline void moveOn(const Vector3& distance)
-    {
-        m_position += distance;
-    }
-
-    inline void rotateOn(const Quaternion& angle)
-    {
-        m_rotation *= angle;
-    }
-
-    const AABB &getAABB()
-    {
-        if (isAABBChanged) calculateAABB();
-
-        return m_aabb;
-    }
-
-    virtual void debugDraw(bool drawAABB)
-    {
-        if (drawAABB) {
-            glMatrixMode(GL_MODELVIEW);
-            glLoadIdentity();
-            glPushMatrix();
-
-            //Generating vertices
-            double *vertices = generateVertices(getAABB().min, getAABB().max);
-
-            float color[4] = {0.f, 0.f, 1.f, 1.f};
-
-            glEnableClientState(GL_VERTEX_ARRAY);
-            glDisableClientState(GL_NORMAL_ARRAY);
-            glEnableClientState(GL_COLOR_ARRAY);
-            glVertexPointer(3, GL_DOUBLE, 0, vertices);
-            glMaterialfv(GL_FRONT, GL_SPECULAR, color);
-            glDrawArrays(GL_LINE_LOOP, 0, 4);
-            glDrawArrays(GL_LINE_LOOP, 4, 4);
-            glDrawArrays(GL_LINES, 8, 8);
-
-            glPopMatrix();
-            delete[] vertices;
+        inline void setPosition(const Vector3 &newPosition)
+        {
+            m_position = newPosition;
+            isAABBChanged = true;
         }
-    }
 
-    virtual CollisionType type() const = 0;
+        inline void setRotation(const Quaternion &newRotation)
+        {
+            m_rotation = newRotation;
+            isAABBChanged = true;
+        }
 
-protected:
-    double *generateVertices(const Vector3 &min, const Vector3 &max)
-    {
-        auto vertices = new double[48];
-        vertices[0] = min.x;
-        vertices[1] = min.y;
-        vertices[2] = min.z;
+        inline const Vector3 &position() const
+        {
+            return m_position;
+        }
 
-        vertices[3] = max.x;
-        vertices[4] = min.y;
-        vertices[5] = min.z;
+        inline const Quaternion &rotation() const
+        {
+            return m_rotation;
+        }
 
-        vertices[6] = max.x;
-        vertices[7] = max.y;
-        vertices[8] = min.z;
+        inline void moveOn(const Vector3 &distance)
+        {
+            m_position += distance;
+        }
 
-        vertices[9] = min.x;
-        vertices[10] = max.y;
-        vertices[11] = min.z;
+        inline void rotateOn(const Quaternion &angle)
+        {
+            m_rotation *= angle;
+        }
 
-        vertices[12] = min.x;
-        vertices[13] = min.y;
-        vertices[14] = max.z;
+        const AABB &getAABB()
+        {
+            if (isAABBChanged) calculateAABB();
 
-        vertices[15] = max.x;
-        vertices[16] = min.y;
-        vertices[17] = max.z;
+            return m_aabb;
+        }
 
-        vertices[18] = max.x;
-        vertices[19] = max.y;
-        vertices[20] = max.z;
+        virtual void debugDraw(bool drawAABB)
+        {
+            if (drawAABB) {
+                glMatrixMode(GL_MODELVIEW);
+                glLoadIdentity();
+                glPushMatrix();
 
-        vertices[21] = min.x;
-        vertices[22] = max.y;
-        vertices[23] = max.z;
+                //Generating vertices
+                double *vertices = generateVertices(getAABB().min, getAABB().max);
 
-        vertices[24] = min.x;
-        vertices[25] = min.y;
-        vertices[26] = min.z;
+                float color[4] = {0.f, 0.f, 1.f, 1.f};
 
-        vertices[27] = min.x;
-        vertices[28] = min.y;
-        vertices[29] = max.z;
+                glEnableClientState(GL_VERTEX_ARRAY);
+                glDisableClientState(GL_NORMAL_ARRAY);
+                glEnableClientState(GL_COLOR_ARRAY);
+                glVertexPointer(3, GL_DOUBLE, 0, vertices);
+                glMaterialfv(GL_FRONT, GL_SPECULAR, color);
+                glDrawArrays(GL_LINE_LOOP, 0, 4);
+                glDrawArrays(GL_LINE_LOOP, 4, 4);
+                glDrawArrays(GL_LINES, 8, 8);
 
-        vertices[30] = max.x;
-        vertices[31] = min.y;
-        vertices[32] = min.z;
+                glPopMatrix();
+                delete[] vertices;
+            }
+        }
 
-        vertices[33] = max.x;
-        vertices[34] = min.y;
-        vertices[35] = max.z;
+        virtual CollisionType type() const = 0;
 
-        vertices[36] = min.x;
-        vertices[37] = max.y;
-        vertices[38] = min.z;
+    protected:
+        double *generateVertices(const Vector3 &min, const Vector3 &max)
+        {
+            auto vertices = new double[48];
+            vertices[0] = min.x;
+            vertices[1] = min.y;
+            vertices[2] = min.z;
 
-        vertices[39] = min.x;
-        vertices[40] = max.y;
-        vertices[41] = max.z;
+            vertices[3] = max.x;
+            vertices[4] = min.y;
+            vertices[5] = min.z;
 
-        vertices[42] = max.x;
-        vertices[43] = max.y;
-        vertices[44] = min.z;
+            vertices[6] = max.x;
+            vertices[7] = max.y;
+            vertices[8] = min.z;
 
-        vertices[45] = max.x;
-        vertices[46] = max.y;
-        vertices[47] = max.z;
+            vertices[9] = min.x;
+            vertices[10] = max.y;
+            vertices[11] = min.z;
 
-        return vertices;
-    }
+            vertices[12] = min.x;
+            vertices[13] = min.y;
+            vertices[14] = max.z;
 
-    Vector3 m_position;
-    Quaternion m_rotation;
+            vertices[15] = max.x;
+            vertices[16] = min.y;
+            vertices[17] = max.z;
 
-    virtual void calculateAABB() = 0;
+            vertices[18] = max.x;
+            vertices[19] = max.y;
+            vertices[20] = max.z;
 
-    bool isAABBChanged = false;
-    AABB m_aabb;
-};
+            vertices[21] = min.x;
+            vertices[22] = max.y;
+            vertices[23] = max.z;
 
+            vertices[24] = min.x;
+            vertices[25] = min.y;
+            vertices[26] = min.z;
+
+            vertices[27] = min.x;
+            vertices[28] = min.y;
+            vertices[29] = max.z;
+
+            vertices[30] = max.x;
+            vertices[31] = min.y;
+            vertices[32] = min.z;
+
+            vertices[33] = max.x;
+            vertices[34] = min.y;
+            vertices[35] = max.z;
+
+            vertices[36] = min.x;
+            vertices[37] = max.y;
+            vertices[38] = min.z;
+
+            vertices[39] = min.x;
+            vertices[40] = max.y;
+            vertices[41] = max.z;
+
+            vertices[42] = max.x;
+            vertices[43] = max.y;
+            vertices[44] = min.z;
+
+            vertices[45] = max.x;
+            vertices[46] = max.y;
+            vertices[47] = max.z;
+
+            return vertices;
+        }
+
+        Vector3 m_position;
+        Quaternion m_rotation;
+
+        virtual void calculateAABB() = 0;
+
+        bool isAABBChanged = false;
+        AABB m_aabb;
+    };
+}
 
 #endif //DSD_GAMEENGINE_COLLISIONVOLUME_H

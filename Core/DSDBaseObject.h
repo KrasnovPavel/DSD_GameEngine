@@ -15,35 +15,56 @@
 #include "Serialization/ReadByteArray.h"
 #include "Serialization/WriteByteArray.h"
 
-typedef std::function<void(WriteByteArray&)> s_func;
-typedef std::function<void(ReadByteArray&)>  d_func;
-typedef std::function<std::size_t()> sizeof_func;
-
-class DSDBaseObject;
-
-class ObjectRegistrator
+namespace DSD
 {
-public:
-    static const unsigned registry(DSDBaseObject*(*creator)())
-    {
-        classCreators.push_back(creator);
-        return classCreators.size() - 1;
-    }
-    static DSDBaseObject* instantiateByID(unsigned ID)
-    {
-        return classCreators.at(ID)();
-    }
-private:
-    static std::vector<DSDBaseObject*(*)()> classCreators;
-};
+    typedef std::function<void(WriteByteArray&)> s_func;
+    typedef std::function<void(ReadByteArray&)>  d_func;
+    typedef std::function<std::size_t()> sizeof_func;
 
-class SerializationController;
+
+    /**
+    * @brief Namespace for all engene's classes.
+    */
+    class DSDBaseObject;
 
 /**
  * @defgroup Core
  * @brief Core library for the engine
  * @{
  */
+
+    /**
+     * @brief Static class registraing objects for serialization.
+     */
+    class ObjectRegistrator
+    {
+    public:
+        /**
+         * @brief Register class for serialisation
+         * @param creator
+         * @return
+         */
+        static const unsigned registry(DSDBaseObject *(*creator)())
+        {
+            classCreators.push_back(creator);
+            return classCreators.size() - 1;
+        }
+
+        /**
+         * @brief Instantiates object by class ID.
+         * @param ID
+         * @return
+         */
+        static DSDBaseObject *instantiateByID(unsigned ID)
+        {
+            return classCreators.at(ID)();
+        }
+
+    private:
+        static std::vector<DSDBaseObject *(*)()> classCreators;
+    };
+
+    class SerializationController;
 
 /**
  * @def SERIALIZABLE(varType, varName, varInit)
@@ -98,205 +119,205 @@ class SerializationController;
     DSDBaseObject* className::createInstance() {return new className(); }; \
     const unsigned className::m_classID = ObjectRegistrator::registry(&className::createInstance);
 
-/**
- * @brief Base class for engine hierarchy
- */
-class DSDBaseObject
-{
-private:
-    template <typename T>
-    static constexpr bool isA = std::is_base_of<DSDBaseObject, T>() &&
-                                                std::is_convertible<T, DSDBaseObject>();
-    const static unsigned m_classID;
-
-    friend SerializationController;
-    void setObjectID(const unsigned& newID)
-    {
-        m_objectID = newID;
-    }
-public:
     /**
-     * @brief DSDBaseObject default constructor
-     * @details All inheritors must have their own default constructor.
+     * @brief Base class for engine hierarchy
      */
-    DSDBaseObject() {}
-
-    /**
-     * @brief DSDBaseObject copy constructor
-     * @param other
-     * @details All inheritors must have their own copy constructor.
-     */
-    DSDBaseObject(DSDBaseObject&& other) noexcept
+    class DSDBaseObject
     {
-        m_objectID = other.objectID();
-    }
+    private:
+        template<typename T>
+        static constexpr bool isA = std::is_base_of<DSDBaseObject, T>() &&
+                                    std::is_convertible<T, DSDBaseObject>();
+        const static unsigned m_classID;
 
-    /**
-     * @brief DSDBaseObject move constructor
-     * @param other
-     * @details All inheritors must have their own move constructor.
-     */
-    DSDBaseObject(const DSDBaseObject& other)
-    {
-        m_objectID = other.objectID();
-    }
+        friend SerializationController;
 
-    /**
-     * @brief Represents class data as std::string
-     * @return string reprisents class data
-     */
-    virtual std::string toString() const
-    {
-        return "{}";
-    }
-
-    /**
-     * @brief logObject Writes object data to log
-     * @details Writes DSDBaseObject::toString() to log.
-     * @param type Type of message.
-     * @param output Where to log message.
-     */
-    virtual void logObject(const LoggerMessageType& type = LoggerMessageType::INFORMATION,
-                           const LoggerOutput& output = LoggerOutput(LoggerOutput::STDOUT))
-    {
-        Logger::Log(toString(), type, output);
-    }
-
-    /**
-     * @brief Calculate size in bytes for this class serialized data.
-     * @return size in bytes for this class serialized data
-     */
-    std::size_t serializedSize()
-    {
-        std::size_t result = 0;
-        for (auto& func: m_sizeofFunctions)
+        void setObjectID(const unsigned &newID)
         {
-            result += func();
+            m_objectID = newID;
         }
-        return result;
-    }
 
-    /**
-     * @brief Serializes this class.
-     * @param [out] data Variable where serialized data will be written
-     */
-    void serialize(WriteByteArray& data) const
-    {
-        for (auto sFunc: m_serializationFunctions)
+    public:
+        /**
+         * @brief DSDBaseObject default constructor
+         * @details All inheritors must have their own default constructor.
+         */
+        DSDBaseObject()
+        {}
+
+        /**
+         * @brief DSDBaseObject copy constructor
+         * @param other
+         * @details All inheritors must have their own copy constructor.
+         */
+        DSDBaseObject(DSDBaseObject &&other) noexcept
         {
-            sFunc(data);
+            m_objectID = other.objectID();
         }
-    }
 
-    /**
-     * @brief Deserializes data to this class.
-     * @param [in] data Data for deserialization
-     */
-    void deserialize(ReadByteArray& data)
-    {
-        for (auto dFunc: m_deserializationFunctions)
+        /**
+         * @brief DSDBaseObject move constructor
+         * @param other
+         * @details All inheritors must have their own move constructor.
+         */
+        DSDBaseObject(const DSDBaseObject &other)
         {
-            dFunc(data);
+            m_objectID = other.objectID();
         }
-    }
 
-    /**
-     * @brief classID Get ID of this class
-     * @return
-     */
-    virtual const unsigned& classID() const
-    {
-        return DSDBaseObject::m_classID;
-    }
+        /**
+         * @brief Represents class data as std::string
+         * @return string reprisents class data
+         */
+        virtual std::string toString() const
+        {
+            return "{}";
+        }
 
-    /**
-     * @brief createInstance Instantiates new object of this class
-     * @return
-     */
-    static DSDBaseObject* createInstance()
-    {
-        return new DSDBaseObject();
-    }
+        /**
+         * @brief logObject Writes object data to log
+         * @details Writes DSDBaseObject::toString() to log.
+         * @param type Type of message.
+         * @param output Where to log message.
+         */
+        virtual void logObject(const LoggerMessageType &type = LoggerMessageType::INFORMATION,
+                               const LoggerOutput &output = LoggerOutput(LoggerOutput::STDOUT))
+        {
+            Logger::Log(toString(), type, output);
+        }
 
-    /**
-     * @brief objectID Returns ID of this object
-     * @return ID of this object or 0 if object do not own by any Serialization controller.
-     */
-    const unsigned& objectID() const
-    {
-        return m_objectID;
-    }
+        /**
+         * @brief Calculate size in bytes for this class serialized data.
+         * @return size in bytes for this class serialized data
+         */
+        std::size_t serializedSize()
+        {
+            std::size_t result = 0;
+            for (auto &func: m_sizeofFunctions) {
+                result += func();
+            }
+            return result;
+        }
 
-protected:
-    /**
-     * @brief Serializes only given variable
-     * @tparam T Type of variable
-     * @param var Variable for serialization
-     * @param [out] data Variable where serialized data will be written
-     */
-    template <typename T, std::enable_if_t<!(isA<T>)>* = nullptr>
-    void serializeVar(const T& var, WriteByteArray& data)
-    {
-        data.write<T>(var);
-    }
+        /**
+         * @brief Serializes this class.
+         * @param [out] data Variable where serialized data will be written
+         */
+        void serialize(WriteByteArray &data) const
+        {
+            for (auto sFunc: m_serializationFunctions) {
+                sFunc(data);
+            }
+        }
 
-    template <typename T, std::enable_if_t<isA<T>>* = nullptr>
-    void serializeVar(const T& var, WriteByteArray& data)
-    {
-        var.serialize(data);
-    }
+        /**
+         * @brief Deserializes data to this class.
+         * @param [in] data Data for deserialization
+         */
+        void deserialize(ReadByteArray &data)
+        {
+            for (auto dFunc: m_deserializationFunctions) {
+                dFunc(data);
+            }
+        }
 
-    /**
-     * @brief Deserializes only one variable
-     * @tparam T Type of variable
-     * @param var Variable for deserialization
-     * @param data Data for deserialization 
-     */
-    template <typename T, std::enable_if_t<!(isA<T>)>* = nullptr>
-    void deserializeVar(T& var, ReadByteArray& data)
-    {
-        var = data.read<T>();
-    }
+        /**
+         * @brief classID Get ID of this class
+         * @return
+         */
+        virtual const unsigned &classID() const
+        {
+            return DSDBaseObject::m_classID;
+        }
 
-    template <typename T, std::enable_if_t<isA<T>>* = nullptr>
-    void deserializeVar(T& var, ReadByteArray& data)
-    {
-        var.deserialize(data);
-    }
+        /**
+         * @brief createInstance Instantiates new object of this class
+         * @return
+         */
+        static DSDBaseObject *createInstance()
+        {
+            return new DSDBaseObject();
+        }
 
-    template <typename t>
-    t AddVar(s_func serializationFunction, d_func deserializationFunction, sizeof_func sizeofFunction, t varInit)
-    {
-        m_serializationFunctions.push_back(serializationFunction);
-        m_deserializationFunctions.push_back(deserializationFunction);
-        m_sizeofFunctions.push_back(sizeofFunction);
-        return varInit;
-    }
+        /**
+         * @brief objectID Returns ID of this object
+         * @return ID of this object or 0 if object do not own by any Serialization controller.
+         */
+        const unsigned &objectID() const
+        {
+            return m_objectID;
+        }
 
-    template <typename T, std::enable_if_t<isA<T>>* = nullptr>
-    std::size_t varSize(T& var)
-    {
-        return var.serializedSize();
-    }
+    protected:
+        /**
+         * @brief Serializes only given variable
+         * @tparam T Type of variable
+         * @param var Variable for serialization
+         * @param [out] data Variable where serialized data will be written
+         */
+        template<typename T, std::enable_if_t<!(isA<T>)> * = nullptr>
+        void serializeVar(const T &var, WriteByteArray &data)
+        {
+            data.write<T>(var);
+        }
 
-    template <typename T, std::enable_if_t<!(isA<T>)>* = nullptr>
-    std::size_t varSize(T& var)
-    {
-        return sizeof(T);
-    }
+        template<typename T, std::enable_if_t<isA<T>> * = nullptr>
+        void serializeVar(const T &var, WriteByteArray &data)
+        {
+            var.serialize(data);
+        }
 
-    std::size_t varSize(std::string& var)
-    {
-        return var.size() + sizeof(std::size_t);
-    }
+        /**
+         * @brief Deserializes only one variable
+         * @tparam T Type of variable
+         * @param var Variable for deserialization
+         * @param data Data for deserialization
+         */
+        template<typename T, std::enable_if_t<!(isA<T>)> * = nullptr>
+        void deserializeVar(T &var, ReadByteArray &data)
+        {
+            var = data.read<T>();
+        }
 
-    std::vector<s_func> m_serializationFunctions{};
-    std::vector<d_func> m_deserializationFunctions{};
-    std::vector<sizeof_func> m_sizeofFunctions{};
-    unsigned m_objectID = 0;
-};
+        template<typename T, std::enable_if_t<isA<T>> * = nullptr>
+        void deserializeVar(T &var, ReadByteArray &data)
+        {
+            var.deserialize(data);
+        }
 
+        template<typename t>
+        t AddVar(s_func serializationFunction, d_func deserializationFunction, sizeof_func sizeofFunction, t varInit)
+        {
+            m_serializationFunctions.push_back(serializationFunction);
+            m_deserializationFunctions.push_back(deserializationFunction);
+            m_sizeofFunctions.push_back(sizeofFunction);
+            return varInit;
+        }
 
+        template<typename T, std::enable_if_t<isA<T>> * = nullptr>
+        std::size_t varSize(T &var)
+        {
+            return var.serializedSize();
+        }
+
+        template<typename T, std::enable_if_t<!(isA<T>)> * = nullptr>
+        std::size_t varSize(T &var)
+        {
+            return sizeof(T);
+        }
+
+        std::size_t varSize(std::string &var)
+        {
+            return var.size() + sizeof(std::size_t);
+        }
+
+        std::vector<s_func> m_serializationFunctions{};
+        std::vector<d_func> m_deserializationFunctions{};
+        std::vector<sizeof_func> m_sizeofFunctions{};
+        unsigned m_objectID = 0;
+    };
+
+}
 /**
  * @}
  */

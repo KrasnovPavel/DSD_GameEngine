@@ -5,6 +5,8 @@
 
 #include "ReadByteArray.h"
 
+using namespace DSD;
+
 template <>
 double ReadByteArray::read()
 {

@@ -8,6 +8,8 @@
 #include "Phisics/Collision/CollisionSphere.h"
 #include "Phisics/Collision/CollisionBox.h"
 
+using namespace DSD;
+
 std::vector<CollisionVolume*> objects;
 
 double gridXZ[252];

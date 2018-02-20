@@ -9,6 +9,8 @@
 
 #include "Core/Exceptions.h"
 
+using namespace DSD;
+
 std::unordered_map<std::string, parseFunction> MeshParser::functionsMap = {std::make_pair(".stl", &MeshParser::parseSTL)};
 std::vector<std::string> MeshParser::formats = MeshParser::getFormats();
 
