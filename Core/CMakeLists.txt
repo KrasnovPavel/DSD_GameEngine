@@ -10,4 +10,3 @@ set(SOURCE_FILES DSDBaseObject.h DSDBaseObject.cpp
 
 add_library(Core SHARED ${SOURCE_FILES})
 set_target_properties(Core PROPERTIES LINKER_LANGUAGE CXX)
-target_link_libraries(Core Logging)

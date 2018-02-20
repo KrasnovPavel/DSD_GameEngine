@@ -187,18 +187,6 @@ namespace DSD
         }
 
         /**
-         * @brief logObject Writes object data to log
-         * @details Writes DSDBaseObject::toString() to log.
-         * @param type Type of message.
-         * @param output Where to log message.
-         */
-        virtual void logObject(const LoggerMessageType &type = LoggerMessageType::INFORMATION,
-                               const LoggerOutput &output = LoggerOutput(LoggerOutput::STDOUT))
-        {
-            Logger::Log(toString(), type, output);
-        }
-
-        /**
          * @brief Calculate size in bytes for this class serialized data.
          * @return size in bytes for this class serialized data
          */
