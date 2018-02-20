@@ -113,6 +113,15 @@ public:
     {
         return std::sqrt(x * x + y * y + z * z);
     }
+    
+    /**
+     * @brief Calculates squared length(magnitude) of this vector.
+     * @return
+     */
+    inline double lengthSquared() const
+    {
+        return x * x + y * y + z * z;
+    }
 
     /**
      * @brief Checks if two vectors are equivalent.

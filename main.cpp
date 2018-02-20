@@ -1,12 +1,14 @@
-
 #include <GL/gl.h>
 #include <GL/glut.h>
 
+#include <vector>
+
 #include "Logging/Logger.h"
+#include "Phisics/Collision/CollisionChecker.h"
 #include "Phisics/Collision/CollisionSphere.h"
 #include "Phisics/Collision/CollisionBox.h"
 
-CollisionSphere sphere(Vector3(0, 0, 0), 20);
+std::vector<CollisionVolume*> objects;
 
 double gridXZ[252];
 
@@ -71,14 +73,30 @@ void display(void)
 
     drawGrid();
 
-    sphere.debugDraw(true);
+    for (auto obj : objects)
+    {
+        obj->debugDraw(true);
+    }
 
     glutSwapBuffers();
 }
 
+void phisicsStep()
+{
+    objects.at(0)->moveOn(Vector3(0.05, 0, 0));
+    objects.at(1)->moveOn(Vector3(-0.05, 0, 0));
+    auto manifolds = CollisionChecker::checkAll(objects);
+    if (!manifolds->empty())
+    {
+        Logger::Log(manifolds->at(0)->first->position().toString() +
+                    manifolds->at(0)->second->position().toString());
+    }
+    delete manifolds;
+}
+
 void repaint(void)
 {
-    sphere.setRotation(sphere.rotation() * Quaternion(M_PI / 180, 0, 0));
+    phisicsStep();
     glutPostRedisplay();
 }
 
@@ -99,6 +117,13 @@ void initLight()
     glClearColor(0.1, 0.1, 0.1, 1);
 }
 
+void initScene()
+{
+    genGridXZ();
+    objects.push_back(new CollisionSphere(Vector3(-20,0,0), 10));
+    objects.push_back(new CollisionSphere(Vector3(20,0,0), 10));
+}
+
 int main(int argc, char* argv[])
 {
     glutInit(&argc, argv);
@@ -110,9 +135,9 @@ int main(int argc, char* argv[])
     glutIdleFunc(repaint);
 
     glEnable (GL_DEPTH_TEST);
-    initLight();
 
-    genGridXZ();
+    initLight();
+    initScene();
 
     glutMainLoop();
 

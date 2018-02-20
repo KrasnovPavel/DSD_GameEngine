@@ -30,13 +30,13 @@ public:
     CollisionVolume(const CollisionVolume &other) : CollisionVolume(other.m_position, other.m_rotation)
     {}
 
-    virtual void setPosition(const Vector3 &newPosition)
+    inline void setPosition(const Vector3 &newPosition)
     {
         m_position = newPosition;
         isAABBChanged = true;
     }
 
-    virtual void setRotation(const Quaternion &newRotation)
+    inline void setRotation(const Quaternion &newRotation)
     {
         m_rotation = newRotation;
         isAABBChanged = true;
@@ -50,6 +50,16 @@ public:
     inline const Quaternion &rotation() const
     {
         return m_rotation;
+    }
+
+    inline void moveOn(const Vector3& distance)
+    {
+        m_position += distance;
+    }
+
+    inline void rotateOn(const Quaternion& angle)
+    {
+        m_rotation *= angle;
     }
 
     const AABB &getAABB()

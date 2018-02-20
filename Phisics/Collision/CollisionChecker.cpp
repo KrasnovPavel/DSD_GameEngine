@@ -24,7 +24,7 @@ std::vector<Manifold*> *CollisionChecker::checkAll(const std::vector<CollisionVo
 
 Manifold* CollisionChecker::check(CollisionSphere *first, CollisionSphere *second)
 {
-    if ((first->position() - second->position()).length() <= (first->radius() + second->radius()))
+    if ((first->position() - second->position()).lengthSquared() <= std::pow((first->radius() + second->radius()), 2))
         return new Manifold(first, second);
 
     return nullptr;
