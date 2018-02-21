@@ -8,8 +8,8 @@
 #include <cmath>
 
 #include "Core/DSDBaseObject.h"
+#include "Functions.h"
 #include "Vector3.h"
-#include "Vector4.h"
 
 namespace DSD
 {
@@ -138,8 +138,8 @@ namespace DSD
          * @return
          */
         inline bool operator==(const Quaternion &rhs) const
-        {   //TODO: Epsilon check
-            return (m_vector == rhs.m_vector) && (scalar == rhs.scalar);
+        {
+            return Math::almostEqual(scalar, rhs.scalar) && m_vector == m_vector;
         }
 
         /**

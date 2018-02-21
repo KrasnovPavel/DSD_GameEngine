@@ -44,6 +44,6 @@ add_subdirectory(${CMAKE_BINARY_DIR}/googletest-src
 
 include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
 
-set(TEST_SOURCE_FILES ${CMAKE_BINARY_DIR}/googletest-src/googletest/src/gtest_main.cc Tests/Tests.cpp)
+set(TEST_SOURCE_FILES ${CMAKE_BINARY_DIR}/googletest-src/googletest/src/gtest_main.cc Tests/TestsMath.cpp)
 add_executable(DSD_Test ${TEST_SOURCE_FILES})
 target_link_libraries(DSD_Test Core Phisics Graphics ${OPENGL_LIBRARIES} ${GLUT_LIBRARY} gtest)

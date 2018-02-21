@@ -8,6 +8,7 @@
 #include <cmath>
 
 #include "Core/DSDBaseObject.h"
+#include "Functions.h"
 
 namespace DSD
 {
@@ -134,8 +135,8 @@ namespace DSD
          * @return
          */
         inline bool operator==(const Vector3 &rhs) const
-        {   //TODO: Epsilon check
-            return (x == rhs.x) && (y == rhs.y) && (z == rhs.z);
+        {
+            return Math::almostEqual(x, rhs.x) && Math::almostEqual(y, rhs.y) && Math::almostEqual(z, rhs.z);
         }
 
         /**
