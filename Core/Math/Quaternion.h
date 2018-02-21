@@ -95,8 +95,10 @@ namespace DSD
          */
         inline double length() const
         {
-            return 1 / std::sqrt(
-                    m_vector.x * m_vector.x + m_vector.y * m_vector.y + m_vector.z * m_vector.z + scalar * scalar);
+            return 1 / std::sqrt(m_vector.x * m_vector.x
+                                 + m_vector.y * m_vector.y
+                                 + m_vector.z * m_vector.z
+                                 + scalar * scalar);
         }
 
         /**
