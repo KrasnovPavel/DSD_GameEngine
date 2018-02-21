@@ -1,0 +1,6 @@
+cmake-build-debug/
+.directory
+.idea/*
+CMakeLists.txt.user
+html/
+latex/
